@@ -2,11 +2,12 @@
 #include <iostream>
 
 namespace KLang{
-    Token::Token(TokenType tokenType, std::string val){
+    Token::Token(TokenType tokenType, std::string lexeme, int line){
         this->tokenType = tokenType;
-        this->val = val;
+        this->lexeme = lexeme;
+        this->line = line;
     }
     void Token::Print(){
-        std::cout << "TOKEN type index: " << tokenType << " value: " << val << std::endl; 
+        std::cout << "TOKEN type:" << tokenType << " lexeme:" << lexeme << " line:" << line << std::endl;
     }
 };

@@ -7,10 +7,11 @@ namespace KLang{
     class Token{
         public:
         TokenType tokenType;
-        std::string val;
+        std::string lexeme;
+        int line;
         
         void Print();
-        Token(TokenType tokenType, std::string val);
+        Token(TokenType tokenType, std::string lexeme, int line);
         
     };
     
