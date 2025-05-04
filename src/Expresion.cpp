@@ -2,9 +2,17 @@
 #include <iostream>
 
 namespace KLang{
-    Expression::Expression(ExpressionType type, std::vector<Token> tokens){
-        this->type = type;
+    Expression::Expression(std::vector<Token> tokens){
+        type = GENERIC;
         this->tokens = tokens;
+    }
+    Expression::Expression(){
+        type = GENERIC;
+        tokens = {};
+    }
+    ExprLiteral::ExprLiteral(Token t){
+        tokens.push_back(t);
+        type = LITERAL;
     }
     void Expression::Print(){
         std::cout << "|";

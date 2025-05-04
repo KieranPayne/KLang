@@ -1,5 +1,1 @@
-var x = 0;
-var y = x;
-var z = "hello world\n";
-y += 5;
-print(y);
+3 + 2 * 5

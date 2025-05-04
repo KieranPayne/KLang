@@ -1,4 +1,5 @@
 #include "Scanner.hpp"
+#include "Error.hpp"
 #include <iostream>
 
 namespace KLang
@@ -54,7 +55,7 @@ namespace KLang
                     i ++;
                 }
                 if (!foundClose){
-                    SyntaxError(line,i-startIndex-1,"missing closing quote");
+                    Error::SyntaxError(line,i-startIndex-1,"missing closing quote");
                 }
                 tokens.push_back(Token(STRING,str,line,i - startIndex));
                 continue;
@@ -94,7 +95,7 @@ namespace KLang
                                 }
                                 else
                                 {
-                                    SyntaxError(line,i-startIndex, "failed to build number");
+                                    Error::SyntaxError(line,i-startIndex, "failed to build number");
                                 }
                             }
                             else
@@ -139,7 +140,7 @@ namespace KLang
                     if (val.size() == 0){
                         std::string str = "unexpected char found:";
                         str += text[i];
-                        SyntaxError(line,i-startIndex,str);
+                        Error::SyntaxError(line,i-startIndex,str);
                         i ++;
                     }
                     i--;
@@ -166,8 +167,5 @@ namespace KLang
         }
         return true;
     }
-    void Scanner::SyntaxError(int line,int col, std::string message)
-    {
-        std::cout << "SYNTAX ERROR AT LINE " << (line + 1) << " COL " << (col+1) << "\nMSG:" << message << std::endl;
-    }
+    
 };
