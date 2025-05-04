@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 #include "Expression.hpp"
 #include "Error.hpp"
+#include <iostream>
 namespace KLang{
     void Parser::Parse(std::vector<Token> tokens){
         Expression e(tokens);
@@ -49,23 +50,38 @@ namespace KLang{
             return new Expression(newTokens);
         }
         else if (type == IF){
-            if (index > tokens.size() - 2){
+            if (index > (int)(tokens.size()) - 3){
                 Error::SyntaxError(tokens[index].line,tokens[index].col,"unexpected if statement");
+                index ++;
                 return nullptr;
             }
             index ++;
-            Expression condExp = *ReadExpression(tokens,index);
-            if (condExp.tokens[0].tokenType != LEFT_PAREN){
-                Error::SyntaxError(condExp.tokens[0].line,condExp.tokens[0].col,"expected parenthesis after if");
+            Expression* condExp = ReadExpression(tokens,index);
+            if (condExp->tokens[0].tokenType != LEFT_PAREN){
+                Error::SyntaxError(condExp->tokens[0].line,condExp->tokens[0].col,"expected parenthesis after if");
                 return nullptr;
             }
-            Expression trueExp = *ReadExpression(tokens,index);
-            Expression falseExp = Expression(std::vector<Token>{});
+            Expression* trueExp = ReadExpression(tokens,index);
+            Expression* falseExp = new Expression(std::vector<Token>{});
             if (index < tokens.size() && tokens[index].tokenType == ELSE){
                 index ++;
-                falseExp = *ReadExpression(tokens,index);
+                falseExp = ReadExpression(tokens,index);
             }
             return new ExprIf(condExp,trueExp,falseExp);
+        }else if (type == WHILE){
+            if (index > (int)(tokens.size()) - 3){
+                Error::SyntaxError(tokens[index].line,tokens[index].col,"unexpected while loop");
+                index ++;
+                return nullptr;
+            }
+            index ++;
+            Expression* condition = ReadExpression(tokens,index);
+            if (condition->tokens[0].tokenType != LEFT_PAREN){
+                Error::SyntaxError(condition->tokens[0].line,condition->tokens[0].col,"expected parenthesis after while");
+                return nullptr;
+            }
+            Expression* loopBlock = ReadExpression(tokens,index);
+            return new ExprWhile(condition,loopBlock);
         }
         
     }

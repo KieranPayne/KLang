@@ -1,5 +1,3 @@
-3if (x > 5){
-    return 0;
-}else{
-    return 1;
+while (x > 5){
+    print("hi");
 }

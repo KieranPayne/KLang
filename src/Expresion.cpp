@@ -17,12 +17,15 @@ namespace KLang{
         tokens.push_back(t);
         type = LITERAL;
     }
-    ExprIf::ExprIf(Expression condition, Expression trueBlock, Expression falseBlock){
+    ExprIf::ExprIf(Expression* condition, Expression* trueBlock, Expression* falseBlock){
         this->condition = condition;
         this->trueBlock = trueBlock;
         this->falseBlock = falseBlock;
     }
-
+    ExprWhile::ExprWhile(Expression* condition, Expression* loopBlock){
+        this->condition = condition;
+        this->loopBlock = loopBlock;
+    }
     void Expression::Join(Expression other){
         for (int i = 0; i < other.tokens.size(); i ++){
             tokens.push_back(other.tokens[i]);
@@ -40,10 +43,15 @@ namespace KLang{
     }
     void ExprIf::Print(){
         std::cout << "|";
-        condition.Print();
-        trueBlock.Print();
-        falseBlock.Print();
+        condition->Print();
+        trueBlock->Print();
+        falseBlock->Print();
         std::cout << "|";
-
+    }
+    void ExprWhile::Print(){
+        std::cout << "|";
+        condition->Print();
+        loopBlock->Print();
+        std::cout << "|";
     }
 }

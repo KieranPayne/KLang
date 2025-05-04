@@ -22,10 +22,17 @@ namespace KLang{
     };
     class ExprIf : public Expression{
         public:
-        Expression trueBlock;
-        Expression falseBlock;
-        Expression condition;
-        ExprIf(Expression condition, Expression trueBlock, Expression falseBlock);
+        Expression* trueBlock;
+        Expression* falseBlock;
+        Expression* condition;
+        ExprIf(Expression* condition, Expression* trueBlock, Expression* falseBlock);
+        void Print();
+    };
+    class ExprWhile : public Expression{
+        public:
+        Expression* condition;
+        Expression* loopBlock;
+        ExprWhile(Expression* condition, Expression* loopBlock);
         void Print();
     };
     
