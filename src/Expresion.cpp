@@ -3,36 +3,52 @@
 
 namespace KLang{
     Expression::Expression(std::vector<Token> tokens){
-        type = GENERIC;
+        type = EXPR_GENERIC;
         this->tokens = tokens;
         if (tokens.size() == 0){
-            type = BLANK;
+            type = EXPR_BLANK;
         }
     }
     Expression::Expression(){
-        type = GENERIC;
+        type = EXPR_GENERIC;
         tokens = {};
     }
     ExprLiteral::ExprLiteral(Token t){
         tokens.push_back(t);
-        type = LITERAL;
+        type = EXPR_LITERAL;
     }
     ExprIf::ExprIf(Expression* condition, Expression* trueBlock, Expression* falseBlock){
+        type = EXPR_IF;
         this->condition = condition;
         this->trueBlock = trueBlock;
         this->falseBlock = falseBlock;
     }
     ExprWhile::ExprWhile(Expression* condition, Expression* loopBlock){
+        type = EXPR_WHILE;
         this->condition = condition;
         this->loopBlock = loopBlock;
     }
+    ExprFuncCall::ExprFuncCall(Token name, std::vector<Expression*> args){
+        type = EXPR_FUNC_CALL;
+        tokens.push_back(name);
+        this->args = args;
+    }
+    ExprAssignment::ExprAssignment(Token name, Expression* expr){
+        tokens.push_back(name);
+        this->expr = expr;
+    }
+    ExprList::ExprList(std::vector<Expression*> exprs){
+        this->exprs = exprs;
+    }
+
+
     void Expression::Join(Expression other){
         for (int i = 0; i < other.tokens.size(); i ++){
             tokens.push_back(other.tokens[i]);
         }
     }
     void Expression::Print(){
-        std::cout << "|";
+        std::cout << "| GENERIC ";
         for (int i = 0; i < tokens.size(); i ++){
             std::cout << tokens[i].lexeme;
             if (i != tokens.size() - 1){
@@ -41,17 +57,45 @@ namespace KLang{
         }
         std::cout << "|";
     }
-    void ExprIf::Print(){
+    void ExprLiteral::Print(){
+        std::cout << "| Literal ";
+        std::cout << tokens[0].lexeme;
         std::cout << "|";
+    }
+    void ExprIf::Print(){
+        std::cout << "| IF ";
         condition->Print();
         trueBlock->Print();
         falseBlock->Print();
         std::cout << "|";
     }
     void ExprWhile::Print(){
-        std::cout << "|";
+        std::cout << "| WHILE ";
         condition->Print();
         loopBlock->Print();
         std::cout << "|";
+    }
+    void ExprFuncCall::Print(){
+        std::cout << "| FUNC CALL";
+        std::cout << " " << tokens[0].lexeme << " ";
+        for (int i = 0; i < args.size(); i ++){
+            args[i]->Print();
+        }
+        std::cout << "|";
+    }
+    void ExprAssignment::Print(){
+        std::cout << "| ASSIGN";
+        std::cout << " " << tokens[0].lexeme << " ";
+        expr->Print();
+        std::cout << "|";
+    }
+    void ExprList::Print(){
+        std::cout << "| LIST ";
+        for (int i = 0; i < exprs.size(); i ++){
+            exprs[i]->Print();
+        }
+        std::cout << "|";
+
+
     }
 }

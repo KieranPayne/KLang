@@ -12,7 +12,14 @@ namespace KLang{
         int index = 0;
         std::vector<Expression*> subExpressions;
         while (e.tokens[index].tokenType != ENDOFFILE){
-            subExpressions.push_back(ReadExpression(e.tokens,index));
+            Expression* expr = ReadExpression(e.tokens,index);
+            if (expr == nullptr){
+                std::cout << "stopping parsing: error reported" << std::endl;
+                return {};
+            }
+            if (expr->type != EXPR_BLANK){
+                subExpressions.push_back(expr);
+            }
         }
         for (int i = 0; i < subExpressions.size(); i ++){
             subExpressions[i]->Print();
@@ -49,6 +56,7 @@ namespace KLang{
             }
             return new Expression(newTokens);
         }
+        //if statement
         else if (type == IF){
             if (index > (int)(tokens.size()) - 3){
                 Error::SyntaxError(tokens[index].line,tokens[index].col,"unexpected if statement");
@@ -68,6 +76,7 @@ namespace KLang{
                 falseExp = ReadExpression(tokens,index);
             }
             return new ExprIf(condExp,trueExp,falseExp);
+        //while loop
         }else if (type == WHILE){
             if (index > (int)(tokens.size()) - 3){
                 Error::SyntaxError(tokens[index].line,tokens[index].col,"unexpected while loop");
@@ -82,6 +91,72 @@ namespace KLang{
             }
             Expression* loopBlock = ReadExpression(tokens,index);
             return new ExprWhile(condition,loopBlock);
+        //identifier (could be either variable or function)
+        }else if (type == IDENTIFIER){
+            if (tokens[index + 1].tokenType == ENDOFFILE){
+                Error::SyntaxError(tokens[index].line,tokens[index].col,"unexpected identifier");
+                index ++;
+                return nullptr;
+            }
+            //function call
+            if (tokens[index + 1].tokenType == LEFT_PAREN){
+                Token name = tokens[index];
+                index += 2;
+                std::vector<Expression*> exprs;
+                std::vector<Expression*> currentArg;
+                while (true){
+                    if (tokens[index].tokenType == ENDOFFILE){
+                        Error::SyntaxError(tokens[index-1].line,tokens[index-1].col,"expected closing parenthesis");
+                        return nullptr;
+                    }else if (tokens[index].tokenType == RIGHT_PAREN){
+                        if (currentArg.size() == 1){
+                            exprs.push_back(currentArg[0]);
+                        }else if (currentArg.size() == 0){
+                            exprs.push_back(new Expression(std::vector<Token>{}));
+                        }else{
+                            exprs.push_back(new ExprList(currentArg));
+                        }
+                        break;
+                    }else if (tokens[index].tokenType == COMMA){
+                        if (currentArg.size() == 1){
+                            exprs.push_back(currentArg[0]);
+                        }else if (currentArg.size() == 0){
+                            exprs.push_back(new Expression(std::vector<Token>{}));
+                        }else{
+                            exprs.push_back(new ExprList(currentArg));
+                        }
+                        currentArg = {};
+                        index ++;
+                    }
+                    currentArg.push_back(ReadExpression(tokens,index));
+                }
+                index ++;
+                return new ExprFuncCall(name,exprs);
+            //assignment
+            }else if (tokens[index + 1].tokenType == EQUAL){
+                Token name = tokens[index];
+                index += 2;
+                if (tokens[index].tokenType == ENDOFFILE){
+                    Error::SyntaxError(tokens[index-1].line,tokens[index-1].col,"expected variable assignment");
+                }
+                std::vector<Expression*> expressions;
+                while (true){
+                    expressions.push_back(ReadExpression(tokens,index));
+                    if (tokens[index].tokenType == ENDOFFILE){
+                        Error::SyntaxError(tokens[index-1].line,tokens[index-1].col,"expected semicolon");
+                    }
+                    if (tokens[index].tokenType == SEMICOLON){
+                        index ++;
+                        break;
+                    }
+                }
+                if (expressions.size() == 1){
+                    return new ExprAssignment(name,expressions[0]);
+                }else{
+                    return new ExprAssignment(name, new ExprList(expressions));
+                }
+            }
+
         }
         
     }

@@ -3,9 +3,14 @@
 #include <vector>
 namespace KLang{
     enum ExpressionType{
-        BLANK,
-        GENERIC,
-        LITERAL
+        EXPR_BLANK,
+        EXPR_GENERIC,
+        EXPR_LITERAL,
+        EXPR_IF,
+        EXPR_WHILE,
+        EXPR_FUNC_CALL,
+        EXPR_ASSIGN,
+        EXPR_LIST
     };
     class Expression{
         public:
@@ -19,6 +24,7 @@ namespace KLang{
     class ExprLiteral : public Expression{
         public:
         ExprLiteral(Token t);
+        void Print();
     };
     class ExprIf : public Expression{
         public:
@@ -33,6 +39,25 @@ namespace KLang{
         Expression* condition;
         Expression* loopBlock;
         ExprWhile(Expression* condition, Expression* loopBlock);
+        void Print();
+    };
+    class ExprFuncCall : public Expression{
+        public:
+        std::vector<Expression*> args;
+        ExprFuncCall(Token name, std::vector<Expression*> args);
+        void Print();
+    };
+    class ExprAssignment : public Expression{
+        public:
+        Expression* expr;
+        ExprAssignment(Token name, Expression* expr);
+        void Print();
+    };
+    //list of expressions
+    class ExprList : public Expression{
+        public:
+        std::vector<Expression*> exprs;
+        ExprList(std::vector<Expression*> exprs);
         void Print();
     };
     
