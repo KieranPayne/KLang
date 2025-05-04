@@ -12,9 +12,11 @@ namespace KLang{
         std::vector<Token> tokens;
         Expression(std::vector<Token> tokens);
         Expression();
+        void Join(Expression other);
         virtual void Print();
     };
-    class ExprLiteral : Expression{
+    class ExprLiteral : public Expression{
+        public:
         ExprLiteral(Token t);
     };
     

@@ -6,7 +6,7 @@ namespace KLang{
     class Parser{
         public:
         static void Parse(std::vector<Token> tokens);
-        static void SplitExpression(Expression e);
-        static Expression ConsumeExpression(std::vector<Token> tokens, int& startIndex);
+        static std::vector<Expression> SplitExpression(Expression e);
+        static Expression* ReadExpression(std::vector<Token> tokens, int& index);
     };
 }

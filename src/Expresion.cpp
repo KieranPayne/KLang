@@ -14,6 +14,11 @@ namespace KLang{
         tokens.push_back(t);
         type = LITERAL;
     }
+    void Expression::Join(Expression other){
+        for (int i = 0; i < other.tokens.size(); i ++){
+            tokens.push_back(other.tokens[i]);
+        }
+    }
     void Expression::Print(){
         std::cout << "|";
         for (int i = 0; i < tokens.size(); i ++){

@@ -9,13 +9,13 @@ namespace KLang
         std::vector<Token> tokens;
         int line = 0;
         int startIndex = 0;
-        int numToMatch = 38;
+        int numToMatch = 34;
         std::string tokensToMatch[] = {"&&", "class", "else", "false", "fn", "for", "if", "null", "return",
                                        "this", "true", "var", "while", "!=", "!", "==", "=", ">=", ">", "<=", "<",
-                                       "(", ")", "{", "}", "[", "]", ",", ".", "-=", "-", "+=", "+", "*=", "*", "/=", "/",";"};
+                                       "(", ")", "{", "}", "[", "]", ",", ".", "-", "+", "*", "/",";"};
         TokenType tokenTypes[] = {AND, CLASS, ELSE, FALSE, FN, FOR, IF, NULLVAL, RETURN, THIS, TRUE, VAR, WHILE, BANG_EQUAL, BANG, EQUAL_EQUAL, EQUAL,
                                   GREATER_EQUAL, GREATER, LESS_EQUAL, LESS, LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, LEFT_SQUARE, RIGHT_SQUARE, COMMA, DOT,
-                                  MINUS_EQUAL, MINUS, PLUS_EQUAL, PLUS, STAR_EQUAL, STAR, SLASH_EQUAL, SLASH, SEMICOLON};
+                                   MINUS, PLUS, STAR, SLASH, SEMICOLON};
         std::string validVariableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
         for (int i = 0; i < text.size(); i++)
         {
