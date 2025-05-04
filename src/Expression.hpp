@@ -12,13 +12,17 @@ namespace KLang{
         EXPR_ASSIGN,
         EXPR_LIST,
         EXPR_UNARY,
-        EXPR_PLACEHOLDER_OPERATOR
+        EXPR_VARIABLE,
+        EXPR_SEQUENCE,
+        EXPR_PLACEHOLDER_OPERATOR,
+        EXPR_ERROR
     };
     class Expression{
         public:
         ExpressionType type;
         std::vector<Token> tokens;
         Expression(std::vector<Token> tokens);
+        Expression(ExpressionType type);
         Expression();
         void Join(Expression other);
         virtual void Print();
@@ -66,6 +70,17 @@ namespace KLang{
         public:
         Expression* expr;
         ExprUnaryOp(Token op, Expression* expr);
+        void Print();
+    };
+    class ExprVariable : public Expression{
+        public:
+        ExprVariable(Token name);
+        void Print();
+    };
+    class ExprSequence : public Expression{
+        public:
+        std::vector<Expression*> exprs;
+        ExprSequence(std::vector<Expression*> exprs);
         void Print();
     };
     
