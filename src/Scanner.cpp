@@ -7,6 +7,7 @@ namespace KLang
     {
         std::vector<Token> tokens;
         int line = 0;
+        int startIndex = 0;
         int numToMatch = 38;
         std::string tokensToMatch[] = {"&&", "class", "else", "false", "fn", "for", "if", "null", "return",
                                        "this", "true", "var", "while", "!=", "!", "==", "=", ">=", ">", "<=", "<",
@@ -24,6 +25,7 @@ namespace KLang
             if (text[i] == '\n')
             {
                 line++;
+                startIndex = i;
                 continue;
             }
             if (stringFound(text, "//", i))
@@ -33,6 +35,7 @@ namespace KLang
                     i++;
                 }
                 line++;
+                startIndex = i;
                 continue;
             }
             if (text[i] == '\"'){
@@ -51,10 +54,9 @@ namespace KLang
                     i ++;
                 }
                 if (!foundClose){
-                    SyntaxError(line,"missing closing quote");
-                    return {};
+                    SyntaxError(line,i-startIndex-1,"missing closing quote");
                 }
-                tokens.push_back(Token(STRING,str,line));
+                tokens.push_back(Token(STRING,str,line,i - startIndex));
                 continue;
             }
             bool tokenFound = false;
@@ -62,7 +64,7 @@ namespace KLang
             {
                 if (stringFound(text, tokensToMatch[j], i))
                 {
-                    tokens.push_back(Token(tokenTypes[j], tokensToMatch[j], line));
+                    tokens.push_back(Token(tokenTypes[j], tokensToMatch[j], line,i-startIndex));
                     tokenFound = true;
                     i += tokensToMatch[j].size() - 1;
                     break;
@@ -92,8 +94,7 @@ namespace KLang
                                 }
                                 else
                                 {
-                                    SyntaxError(line, "failed to build number");
-                                return {};
+                                    SyntaxError(line,i-startIndex, "failed to build number");
                                 }
                             }
                             else
@@ -107,11 +108,11 @@ namespace KLang
                     }
                     if (isInt)
                     {
-                        tokens.push_back(Token(INTEGER, num, line));
+                        tokens.push_back(Token(INTEGER, num, line, i-startIndex));
                     }
                     else
                     {
-                        tokens.push_back(Token(REAL, num, line));
+                        tokens.push_back(Token(REAL, num, line, i-startIndex));
                     }
                 }
                 else
@@ -138,15 +139,15 @@ namespace KLang
                     if (val.size() == 0){
                         std::string str = "unexpected char found:";
                         str += text[i];
-                        SyntaxError(line,str);
-                        return {};
+                        SyntaxError(line,i-startIndex,str);
+                        i ++;
                     }
                     i--;
-                    tokens.push_back(Token(IDENTIFIER, val, line));
+                    tokens.push_back(Token(IDENTIFIER, val, line,i-startIndex));
                 }
             }
         }
-        tokens.push_back(Token(ENDOFFILE, "", line));
+        tokens.push_back(Token(ENDOFFILE, "", line,0));
 
         return tokens;
     }
@@ -165,8 +166,8 @@ namespace KLang
         }
         return true;
     }
-    void Scanner::SyntaxError(int line, std::string message)
+    void Scanner::SyntaxError(int line,int col, std::string message)
     {
-        std::cout << "SYNTAX ERROR\nLINE:" << std::to_string(line) << " MSG:" << message << std::endl;
+        std::cout << "SYNTAX ERROR AT LINE " << (line + 1) << " COL " << (col+1) << "\nMSG:" << message << std::endl;
     }
 };
