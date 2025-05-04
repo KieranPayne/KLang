@@ -10,5 +10,7 @@ namespace KLang{
         static ExprSequence* ParseToSequence(std::vector<Token> tokens);
         static Expression* ReadExpression(std::vector<Token> tokens, int& index);
         static Expression* ApplyUnaryTo(Expression* expr, Token op);
+        static Expression* ParseExprList(ExprList* li);
+        static Expression* TryParseList(Expression* expr);
     };
 }

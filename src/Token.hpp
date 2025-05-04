@@ -17,7 +17,7 @@ namespace KLang{
 
         // Keywords.
         AND, CLASS, ELSE, FALSE, FN, FOR, IF, NULLVAL, OR,
-        RETURN, THIS, TRUE, VAR, WHILE,
+        RETURN, THIS, TRUE, VAR, WHILE,BREAK,CONTINUE,
 
         ENDOFFILE
     };

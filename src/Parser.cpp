@@ -58,7 +58,22 @@ namespace KLang{
             expr = ApplyUnaryTo(expr,op);
             return expr;
         }
-        if (type == INTEGER || type == STRING || type == REAL){
+        if (type == RETURN){
+            index ++;
+            if (tokens[index].tokenType == SEMICOLON){
+                return new ExprReturn(new Expression(EXPR_BLANK));
+            }else if (tokens[index].tokenType == ENDOFFILE){
+                Error::SyntaxError(tokens[index-1].line,tokens[index-1].col,"unexpected return at end of file");
+                return new Expression(EXPR_ERROR);
+            }else{
+                return new ExprReturn(ReadExpression(tokens,index));
+            }
+        }else if (type == BREAK){
+            return new ExprBreak(tokens[index++]);
+        }else if (type == CONTINUE){
+            return new ExprContinue(tokens[index++]);
+        }
+        if (type == INTEGER || type == STRING || type == REAL || type == TRUE || type == FALSE){
             ExprLiteral* exp = new ExprLiteral(tokens[index]);
             ++index;
             return CheckForBinOp(tokens,index,exp);
@@ -107,14 +122,15 @@ namespace KLang{
                 return new Expression(EXPR_ERROR);
             }
             index ++;
+            if (tokens[index].tokenType != LEFT_PAREN){
+                Error::SyntaxError(tokens[index].line,tokens[index].col,"expected parenthesis after if");
+                return new Expression(EXPR_ERROR);
+            }
             Expression* condExp = ReadExpression(tokens,index);
             if (condExp->type == EXPR_ERROR){
                 return new Expression(EXPR_ERROR);
             }
-            if (condExp->tokens[0].tokenType != LEFT_PAREN){
-                Error::SyntaxError(condExp->tokens[0].line,condExp->tokens[0].col,"expected parenthesis after if");
-                return new Expression(EXPR_ERROR);
-            }
+            condExp = TryParseList(condExp);
             Expression* trueExp = ReadExpression(tokens,index);
             if (trueExp->type == EXPR_ERROR){
                 return new Expression(EXPR_ERROR);
@@ -143,7 +159,7 @@ namespace KLang{
                     falseExp = seq->exprs[0];
                 }
             }
-            return new ExprIf(condExp,trueExp,falseExp);
+            return CheckForBinOp(tokens,index,new ExprIf(condExp,trueExp,falseExp));
         //while loop
         }else if (type == WHILE){
             if (index > (int)(tokens.size()) - 3){
@@ -159,6 +175,7 @@ namespace KLang{
             if (condition->type == EXPR_ERROR){
                 return new Expression(EXPR_ERROR);
             }
+            condition = TryParseList(condition);
            
             Expression* loopBlock = ReadExpression(tokens,index);
             if (loopBlock->type == EXPR_ERROR){
@@ -175,7 +192,7 @@ namespace KLang{
             if (loopBlock->type == EXPR_ERROR){
                 return new Expression(EXPR_ERROR);
             }
-            return new ExprWhile(condition,loopBlock);
+            return CheckForBinOp(tokens,index, new ExprWhile(condition,loopBlock));
         //identifier (could be either variable or function)
         }else if (type == IDENTIFIER){
             if (tokens[index + 1].tokenType == ENDOFFILE){
@@ -201,8 +218,11 @@ namespace KLang{
                         return new Expression(EXPR_ERROR);
                     }
                 }
+                for (int i = 0; i < exprs.size(); i ++){
+                    exprs[i] = TryParseList(exprs[i]);
+                }
                 index ++;
-                return new ExprFuncCall(name,exprs);
+                return CheckForBinOp(tokens,index, new ExprFuncCall(name,exprs));
             //assignment
             }else if (tokens[index + 1].tokenType == EQUAL){
                 Token name = tokens[index];
@@ -227,14 +247,15 @@ namespace KLang{
                     }
                 }
                 if (expressions.size() == 1){
-                    return new ExprAssignment(name,expressions[0]);
+                    return new ExprAssignment(name,TryParseList(expressions[0]));
                 }else{
-                    return new ExprAssignment(name, new ExprList(expressions));
+                    return new ExprAssignment(name, ParseExprList(new ExprList(expressions)));
                 }
             }else{
                 //exact copy of code in literal section
-                index ++;
                 Expression* start = new ExprVariable(tokens[index]);
+                index ++;
+
                 return CheckForBinOp(tokens,index,start);
                 // return new ExprVariable(tokens[index++]);
             }
@@ -249,7 +270,7 @@ namespace KLang{
             //check for binary operator here, if there is one turn whole thing into expression list
             TokenType type = tokens[index].tokenType;
             std::vector<TokenType> operators = {PLUS,MINUS,SLASH,STAR,
-            EQUAL_EQUAL,GREATER_EQUAL,LESS_EQUAL,LESS,GREATER};
+            EQUAL_EQUAL,GREATER_EQUAL,LESS_EQUAL,LESS,GREATER, AND, OR};
             bool isOp = false;
             for (int i = 0; i < operators.size(); i ++){
                 if (operators[i] == type){
@@ -276,9 +297,59 @@ namespace KLang{
                     exprs.push_back(otherSide);
                 }
                 return new ExprList(exprs);
+                
+                // return new ExprList(exprs);
             }
         }
         index = startIndex;
         return start;
+    }
+    Expression* Parser::ParseExprList(ExprList* li){
+        li->Print();
+        std::cout << std::endl;
+        //order of precedence: (essentially bidmas in reverse, plus boolean)
+        //+ - * / >= <= > < == != | &
+        li->CollectSubLists();
+        if (li->exprs.size() == 1){
+            return li->exprs[0];
+        }
+        std::vector<TokenType> ops = {OR, AND, EQUAL_EQUAL, BANG_EQUAL, GREATER_EQUAL, LESS_EQUAL,
+        LESS, GREATER, PLUS, MINUS, STAR, SLASH};
+        for (int j = 0; j < ops.size(); j ++){
+            for (int i = 0; i < li->exprs.size(); i ++){
+                TokenType op;
+                if (li->exprs[i]->type == EXPR_PLACEHOLDER_OPERATOR){
+                    op = li->exprs[i]->tokens[0].tokenType;
+                }else{
+                    continue;
+                }
+                if (ops[j] == op){
+                    std::vector<Expression*> lhs;
+                    std::vector<Expression*> rhs;
+                    for (int k = 0; k < i; k ++){
+                        lhs.push_back(li->exprs[k]);
+                    }
+                    for (int k = i + 1; k < li->exprs.size(); k ++){
+                        rhs.push_back(li->exprs[k]);
+                    }
+                    Expression* lhsexpr = TryParseList(new ExprList(lhs));
+                    Expression* rhsexpr = TryParseList(new ExprList(rhs));
+                    ExprBinaryOp* binOp = new ExprBinaryOp(li->exprs[i]->tokens[0],lhsexpr,rhsexpr);
+                    return binOp;
+                }
+            }
+        }
+        Error::SyntaxError(li->exprs[0]->tokens[0].line,li->exprs[0]->tokens[0].col,"failed to break down expr li");
+        return nullptr;
+    }
+    Expression* Parser::TryParseList(Expression* expr){
+        if (expr->type == EXPR_LIST){
+            return ParseExprList(dynamic_cast<ExprList*>(expr));
+        }else if (expr->type == EXPR_GROUPING){
+            ExprGrouping* g = dynamic_cast<ExprGrouping*>(expr);
+            g->expr = TryParseList(g->expr);
+        }else{
+            return expr;
+        }
     }
 }

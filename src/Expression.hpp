@@ -15,6 +15,10 @@ namespace KLang{
         EXPR_VARIABLE,
         EXPR_SEQUENCE,
         EXPR_GROUPING,
+        EXPR_BREAK,
+        EXPR_CONTINUE,
+        EXPR_RETURN,
+        EXPR_BINARY,
         EXPR_PLACEHOLDER_OPERATOR,
         EXPR_ERROR
     };
@@ -65,6 +69,7 @@ namespace KLang{
         public:
         std::vector<Expression*> exprs;
         ExprList(std::vector<Expression*> exprs);
+        void CollectSubLists();
         void Print();
     };
     class ExprUnaryOp : public Expression{
@@ -88,6 +93,29 @@ namespace KLang{
         public:
         Expression* expr;
         ExprGrouping(Expression* expr);
+        void Print();
+    };
+    class ExprBreak : public Expression{
+        public:
+        ExprBreak(Token token);
+        void Print();
+    };
+    class ExprContinue : public Expression{
+        public:
+        ExprContinue(Token token);
+        void Print();
+    };
+    class ExprReturn : public Expression{
+        public:
+        Expression* returnVal;
+        ExprReturn(Expression* returnVal);
+        void Print();
+    };
+    class ExprBinaryOp : public Expression{
+        public:
+        Expression* lhs;
+        Expression* rhs;
+        ExprBinaryOp(Token op, Expression* lhs, Expression* rhs);
         void Print();
     };
     

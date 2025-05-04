@@ -63,11 +63,43 @@ namespace KLang{
         this->expr = expr;
         type = EXPR_GROUPING;
     }
-
+    ExprBreak::ExprBreak(Token token){
+        tokens.push_back(token);
+        type = EXPR_BREAK;
+    }
+    ExprContinue::ExprContinue(Token token){
+        tokens.push_back(token);
+        type = EXPR_CONTINUE;
+    }
+    ExprReturn::ExprReturn(Expression* returnVal){
+        this->returnVal = returnVal;
+        type = EXPR_RETURN;
+    }
+    ExprBinaryOp::ExprBinaryOp(Token op, Expression* lhs, Expression* rhs){
+        tokens.push_back(op);
+        this->lhs = lhs;
+        this->rhs = rhs;
+        this->type = EXPR_BINARY;
+    }
     void Expression::Join(Expression other){
         for (int i = 0; i < other.tokens.size(); i ++){
             tokens.push_back(other.tokens[i]);
         }
+    }
+    void ExprList::CollectSubLists(){
+        std::vector<Expression*> newList;
+        for (int i = 0; i < exprs.size(); i ++){
+            if (exprs[i]->type == EXPR_LIST){
+                ExprList* li = dynamic_cast<ExprList*>(exprs[i]);
+                li->CollectSubLists();
+                for (int j = 0; j < li->exprs.size(); j ++){
+                    newList.push_back(li->exprs[j]);
+                }
+            }else{
+                newList.push_back(exprs[i]);
+            }
+        }
+        exprs = newList;
     }
     void Expression::Print(){
         std::cout << "[GENERIC ";
@@ -80,8 +112,19 @@ namespace KLang{
         std::cout << "]";
     }
     void ExprLiteral::Print(){
-        std::cout << "[Literal ";
-        std::cout << tokens[0].lexeme;
+        std::cout << "[";
+        if (tokens[0].tokenType == INTEGER){
+            std::cout << "INTEGER";
+        }else if (tokens[0].tokenType == STRING){
+            std::cout << "STRING";
+        }else if (tokens[0].tokenType == REAL){
+            std::cout << "REAL";
+        }else if (tokens[0].tokenType == TRUE){
+            std::cout << "BOOL";
+        }else if (tokens[0].tokenType == FALSE){
+            std::cout << "BOOL";
+        }
+        std::cout << " " << tokens[0].lexeme;
         std::cout << "]";
     }
     void ExprIf::Print(){
@@ -139,6 +182,24 @@ namespace KLang{
     void ExprGrouping::Print(){
         std::cout << "[GROUPING ";
         expr->Print();
+        std::cout << "]";
+    }
+    void ExprBreak::Print(){
+        std::cout << "[BREAK]";
+    }
+    void ExprContinue::Print(){
+        std::cout << "[CONTINUE]";
+    }
+    void ExprReturn::Print(){
+        std::cout << "[RETURN ";
+        returnVal->Print();
+        std::cout << "]";
+    }
+    void ExprBinaryOp::Print(){
+        std::cout << "[BIN OP ";
+        std::cout << tokens[0].lexeme << " ";
+        lhs->Print();
+        rhs->Print();
         std::cout << "]";
     }
 }

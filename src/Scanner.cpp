@@ -9,13 +9,13 @@ namespace KLang
         std::vector<Token> tokens;
         int line = 0;
         int startIndex = 0;
-        int numToMatch = 33;
-        std::string tokensToMatch[] = {"&&", "class", "else", "false", "fn", "for", "if", "null", "return",
+        int numToMatch = 36;
+        std::string tokensToMatch[] = {"&&", "||", "class", "else", "false", "fn", "for", "if", "null", "return",
                                        "this", "true", "while", "!=", "!", "==", "=", ">=", ">", "<=", "<",
-                                       "(", ")", "{", "}", "[", "]", ",", ".", "-", "+", "*", "/",";"};
-        TokenType tokenTypes[] = {AND, CLASS, ELSE, FALSE, FN, FOR, IF, NULLVAL, RETURN, THIS, TRUE, WHILE, BANG_EQUAL, BANG, EQUAL_EQUAL, EQUAL,
+                                       "(", ")", "{", "}", "[", "]", ",", ".", "-", "+", "*", "/",";","break","continue"};
+        TokenType tokenTypes[] = {AND, OR, CLASS, ELSE, FALSE, FN, FOR, IF, NULLVAL, RETURN, THIS, TRUE, WHILE, BANG_EQUAL, BANG, EQUAL_EQUAL, EQUAL,
                                   GREATER_EQUAL, GREATER, LESS_EQUAL, LESS, LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, LEFT_SQUARE, RIGHT_SQUARE, COMMA, DOT,
-                                   MINUS, PLUS, STAR, SLASH, SEMICOLON};
+                                   MINUS, PLUS, STAR, SLASH, SEMICOLON,BREAK,CONTINUE};
         std::string validVariableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
         for (int i = 0; i < text.size(); i++)
         {
