@@ -3,6 +3,7 @@
 #include <vector>
 namespace KLang{
     enum ExpressionType{
+        BLANK,
         GENERIC,
         LITERAL
     };
@@ -18,6 +19,14 @@ namespace KLang{
     class ExprLiteral : public Expression{
         public:
         ExprLiteral(Token t);
+    };
+    class ExprIf : public Expression{
+        public:
+        Expression trueBlock;
+        Expression falseBlock;
+        Expression condition;
+        ExprIf(Expression condition, Expression trueBlock, Expression falseBlock);
+        void Print();
     };
     
 }

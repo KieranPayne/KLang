@@ -45,9 +45,27 @@ namespace KLang{
                 }
                 newTokens.push_back(tokens[index]);
                 index ++;
-                
             }
             return new Expression(newTokens);
+        }
+        else if (type == IF){
+            if (index > tokens.size() - 2){
+                Error::SyntaxError(tokens[index].line,tokens[index].col,"unexpected if statement");
+                return nullptr;
+            }
+            index ++;
+            Expression condExp = *ReadExpression(tokens,index);
+            if (condExp.tokens[0].tokenType != LEFT_PAREN){
+                Error::SyntaxError(condExp.tokens[0].line,condExp.tokens[0].col,"expected parenthesis after if");
+                return nullptr;
+            }
+            Expression trueExp = *ReadExpression(tokens,index);
+            Expression falseExp = Expression(std::vector<Token>{});
+            if (index < tokens.size() && tokens[index].tokenType == ELSE){
+                index ++;
+                falseExp = *ReadExpression(tokens,index);
+            }
+            return new ExprIf(condExp,trueExp,falseExp);
         }
         
     }
