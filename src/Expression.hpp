@@ -10,7 +10,9 @@ namespace KLang{
         EXPR_WHILE,
         EXPR_FUNC_CALL,
         EXPR_ASSIGN,
-        EXPR_LIST
+        EXPR_LIST,
+        EXPR_UNARY,
+        EXPR_PLACEHOLDER_OPERATOR
     };
     class Expression{
         public:
@@ -58,6 +60,12 @@ namespace KLang{
         public:
         std::vector<Expression*> exprs;
         ExprList(std::vector<Expression*> exprs);
+        void Print();
+    };
+    class ExprUnaryOp : public Expression{
+        public:
+        Expression* expr;
+        ExprUnaryOp(Token op, Expression* expr);
         void Print();
     };
     

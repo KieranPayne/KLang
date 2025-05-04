@@ -36,10 +36,18 @@ namespace KLang{
     ExprAssignment::ExprAssignment(Token name, Expression* expr){
         tokens.push_back(name);
         this->expr = expr;
+        type = EXPR_ASSIGN;
     }
     ExprList::ExprList(std::vector<Expression*> exprs){
         this->exprs = exprs;
+        type = EXPR_LIST;
     }
+    ExprUnaryOp::ExprUnaryOp(Token op, Expression* expr){
+        tokens.push_back(op);
+        this->expr = expr;
+        type = EXPR_UNARY;
+    }
+
 
 
     void Expression::Join(Expression other){
@@ -48,54 +56,59 @@ namespace KLang{
         }
     }
     void Expression::Print(){
-        std::cout << "| GENERIC ";
+        std::cout << "[ GENERIC ";
         for (int i = 0; i < tokens.size(); i ++){
             std::cout << tokens[i].lexeme;
             if (i != tokens.size() - 1){
                 std::cout << " ";
             }
         }
-        std::cout << "|";
+        std::cout << "]";
     }
     void ExprLiteral::Print(){
-        std::cout << "| Literal ";
+        std::cout << "[ Literal ";
         std::cout << tokens[0].lexeme;
-        std::cout << "|";
+        std::cout << "]";
     }
     void ExprIf::Print(){
-        std::cout << "| IF ";
+        std::cout << "[ IF ";
         condition->Print();
         trueBlock->Print();
         falseBlock->Print();
-        std::cout << "|";
+        std::cout << "]";
     }
     void ExprWhile::Print(){
-        std::cout << "| WHILE ";
+        std::cout << "[ WHILE ";
         condition->Print();
         loopBlock->Print();
-        std::cout << "|";
+        std::cout << "]";
     }
     void ExprFuncCall::Print(){
-        std::cout << "| FUNC CALL";
+        std::cout << "[ FUNC CALL";
         std::cout << " " << tokens[0].lexeme << " ";
         for (int i = 0; i < args.size(); i ++){
             args[i]->Print();
         }
-        std::cout << "|";
+        std::cout << "]";
     }
     void ExprAssignment::Print(){
-        std::cout << "| ASSIGN";
+        std::cout << "[ ASSIGN";
         std::cout << " " << tokens[0].lexeme << " ";
         expr->Print();
-        std::cout << "|";
+        std::cout << "]";
     }
     void ExprList::Print(){
-        std::cout << "| LIST ";
+        std::cout << "[ LIST ";
         for (int i = 0; i < exprs.size(); i ++){
             exprs[i]->Print();
         }
-        std::cout << "|";
-
+        std::cout << "]";
+    }
+    void ExprUnaryOp::Print(){
+        std::cout << "[ UNARY ";
+        std::cout << tokens[0].lexeme << " ";
+        expr->Print();
+        std::cout << "]";
 
     }
 }

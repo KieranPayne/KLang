@@ -1,1 +1,4 @@
-x = print(5);
+x = -3 + 2;
+while (x > 5){
+    print("hello world!");
+}

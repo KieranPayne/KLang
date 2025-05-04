@@ -6,6 +6,7 @@ namespace KLang{
     void Parser::Parse(std::vector<Token> tokens){
         Expression e(tokens);
         SplitExpression(e);
+        std:: cout << std::endl;
     }
     //splits expression into sub expressions based on binary operators
     std::vector<Expression> Parser::SplitExpression(Expression e){
@@ -23,12 +24,62 @@ namespace KLang{
         }
         for (int i = 0; i < subExpressions.size(); i ++){
             subExpressions[i]->Print();
+            std::cout << std::endl;
         }
         return {};
     }
+    Expression* Parser::ApplyUnaryTo(Expression* expr, Token op){
+        if (expr->type == EXPR_LIST){
+            ExprList* li = dynamic_cast<ExprList*>(expr);
+            li->exprs[0] = ApplyUnaryTo(li->exprs[0],op);
+            return li;
+        }else{
+            ExprUnaryOp* unary = new ExprUnaryOp(op,expr);
+            return unary;
+        }
+        return nullptr;
+    }
     Expression* Parser::ReadExpression(std::vector<Token> tokens, int& index){
         TokenType type = tokens[index].tokenType;
+        if (type == BANG || type == MINUS){
+            Token op = tokens[index];
+            index ++;
+            Expression* expr = ReadExpression(tokens,index);
+            expr = ApplyUnaryTo(expr,op);
+            return expr;
+        }
         if (type == INTEGER || type == STRING || type == REAL){
+            if (tokens[index + 1].tokenType != ENDOFFILE){
+                //check for binary operator here, if there is one turn whole thing into expression list
+                TokenType type = tokens[index + 1].tokenType;
+                std::vector<TokenType> operators = {PLUS,MINUS,SLASH,STAR,
+                EQUAL_EQUAL,GREATER_EQUAL,LESS_EQUAL,LESS,GREATER};
+                bool isOp = false;
+                for (int i = 0; i < operators.size(); i ++){
+                    if (operators[i] == type){
+                        isOp = true;
+                        break;
+                    }
+                }
+                if (isOp){
+                    std::vector<Expression*> exprs = {new ExprLiteral(tokens[index])};
+                    index ++;
+                    Expression* operation = new Expression({tokens[index]});
+                    operation->type = EXPR_PLACEHOLDER_OPERATOR;
+                    exprs.push_back(operation);
+                    index ++;
+                    Expression* otherSide = ReadExpression(tokens,index);
+                    if (otherSide->type == EXPR_LIST){
+                        ExprList* li = dynamic_cast<ExprList*>(otherSide);
+                        for (int i = 0; i < li->exprs.size(); i ++){
+                            exprs.push_back(li->exprs[i]);
+                        }
+                    }else{
+                        exprs.push_back(otherSide);
+                    }
+                    return new ExprList(exprs);
+                }
+            }
             return new ExprLiteral(tokens[index++]);
         }
         // std::vector<TokenType> binOps = {PLUS,MINUS,SLASH,STAR,
@@ -103,32 +154,16 @@ namespace KLang{
                 Token name = tokens[index];
                 index += 2;
                 std::vector<Expression*> exprs;
-                std::vector<Expression*> currentArg;
                 while (true){
                     if (tokens[index].tokenType == ENDOFFILE){
                         Error::SyntaxError(tokens[index-1].line,tokens[index-1].col,"expected closing parenthesis");
                         return nullptr;
                     }else if (tokens[index].tokenType == RIGHT_PAREN){
-                        if (currentArg.size() == 1){
-                            exprs.push_back(currentArg[0]);
-                        }else if (currentArg.size() == 0){
-                            exprs.push_back(new Expression(std::vector<Token>{}));
-                        }else{
-                            exprs.push_back(new ExprList(currentArg));
-                        }
                         break;
                     }else if (tokens[index].tokenType == COMMA){
-                        if (currentArg.size() == 1){
-                            exprs.push_back(currentArg[0]);
-                        }else if (currentArg.size() == 0){
-                            exprs.push_back(new Expression(std::vector<Token>{}));
-                        }else{
-                            exprs.push_back(new ExprList(currentArg));
-                        }
-                        currentArg = {};
                         index ++;
                     }
-                    currentArg.push_back(ReadExpression(tokens,index));
+                    exprs.push_back(ReadExpression(tokens,index));
                 }
                 index ++;
                 return new ExprFuncCall(name,exprs);
