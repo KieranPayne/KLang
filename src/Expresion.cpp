@@ -59,7 +59,10 @@ namespace KLang{
         this->exprs = exprs;
         type = EXPR_SEQUENCE;
     }
-
+    ExprGrouping::ExprGrouping(Expression* expr){
+        this->expr = expr;
+        type = EXPR_GROUPING;
+    }
 
     void Expression::Join(Expression other){
         for (int i = 0; i < other.tokens.size(); i ++){
@@ -131,6 +134,11 @@ namespace KLang{
         for (int i = 0; i < exprs.size(); i ++){
             exprs[i]->Print();
         }
+        std::cout << "]";
+    }
+    void ExprGrouping::Print(){
+        std::cout << "[GROUPING ";
+        expr->Print();
         std::cout << "]";
     }
 }

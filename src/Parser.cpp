@@ -59,51 +59,20 @@ namespace KLang{
             return expr;
         }
         if (type == INTEGER || type == STRING || type == REAL){
-            if (tokens[index + 1].tokenType != ENDOFFILE){
-                //check for binary operator here, if there is one turn whole thing into expression list
-                TokenType type = tokens[index + 1].tokenType;
-                std::vector<TokenType> operators = {PLUS,MINUS,SLASH,STAR,
-                EQUAL_EQUAL,GREATER_EQUAL,LESS_EQUAL,LESS,GREATER};
-                bool isOp = false;
-                for (int i = 0; i < operators.size(); i ++){
-                    if (operators[i] == type){
-                        isOp = true;
-                        break;
-                    }
-                }
-                if (isOp){
-                    std::vector<Expression*> exprs = {new ExprLiteral(tokens[index])};
-                    index ++;
-                    Expression* operation = new Expression({tokens[index]});
-                    operation->type = EXPR_PLACEHOLDER_OPERATOR;
-                    exprs.push_back(operation);
-                    index ++;
-                    Expression* otherSide = ReadExpression(tokens,index);
-                    if (otherSide->type == EXPR_ERROR){
-                        return new Expression(EXPR_ERROR);
-                    }
-                    if (otherSide->type == EXPR_LIST){
-                        ExprList* li = dynamic_cast<ExprList*>(otherSide);
-                        for (int i = 0; i < li->exprs.size(); i ++){
-                            exprs.push_back(li->exprs[i]);
-                        }
-                    }else{
-                        exprs.push_back(otherSide);
-                    }
-                    return new ExprList(exprs);
-                }
-            }
-            return new ExprLiteral(tokens[index++]);
+            ExprLiteral* exp = new ExprLiteral(tokens[index]);
+            ++index;
+            return CheckForBinOp(tokens,index,exp);
         }
         // std::vector<TokenType> binOps = {PLUS,MINUS,SLASH,STAR,
         // GREATER,GREATER_EQUAL,LESS,LESS_EQUAL,EQUAL_EQUAL,BANG_EQUAL};
 
         //check for matching braces
         if (type == LEFT_PAREN || type == LEFT_BRACE || type == LEFT_SQUARE){
+            int startIndex = index;
             TokenType open = type;
             TokenType closing = (type == LEFT_PAREN) ? RIGHT_PAREN : (type == LEFT_BRACE) ? RIGHT_BRACE : RIGHT_SQUARE;
             int count = 1;
-            std::vector<Token> newTokens = {tokens[index]};
+            std::vector<Token> newTokens = {};
             index ++;
             while (count != 0) {
                 if (index == tokens.size()){
@@ -118,11 +87,18 @@ namespace KLang{
                 newTokens.push_back(tokens[index]);
                 index ++;
             }
+            newTokens.erase(newTokens.end()-1);
             if (type == LEFT_BRACE){
-                newTokens.erase(newTokens.begin());
-                newTokens.erase(newTokens.end()-1);
+                return new Expression(newTokens);
             }
-            return new Expression(newTokens);
+            if (type == LEFT_PAREN){
+                newTokens.push_back(Token(ENDOFFILE,"",0,0));
+                int test = 0;
+                ExprGrouping* e = new ExprGrouping(ReadExpression(newTokens,test));
+                // index ++;
+                return CheckForBinOp(tokens,index,e);
+            }
+            //TODO: deal with square brackets
         }
         //if statement
         else if (type == IF){
@@ -175,14 +151,15 @@ namespace KLang{
                 return new Expression(EXPR_ERROR);
             }
             index ++;
+            if (tokens[index].tokenType != LEFT_PAREN){
+                Error::SyntaxError(tokens[index-1].line,tokens[index-1].col,"expected parenthesis after while");
+                return new Expression(EXPR_ERROR);
+            }
             Expression* condition = ReadExpression(tokens,index);
             if (condition->type == EXPR_ERROR){
                 return new Expression(EXPR_ERROR);
             }
-            if (condition->tokens[0].tokenType != LEFT_PAREN){
-                Error::SyntaxError(condition->tokens[0].line,condition->tokens[0].col,"expected parenthesis after while");
-                return new Expression(EXPR_ERROR);
-            }
+           
             Expression* loopBlock = ReadExpression(tokens,index);
             if (loopBlock->type == EXPR_ERROR){
                 return new Expression(EXPR_ERROR);
@@ -202,10 +179,7 @@ namespace KLang{
         //identifier (could be either variable or function)
         }else if (type == IDENTIFIER){
             if (tokens[index + 1].tokenType == ENDOFFILE){
-                Error::SyntaxError(tokens[index].line,tokens[index].col,"unexpected identifier");
-                index ++;
-                return new Expression(EXPR_ERROR);
-
+                return new ExprVariable(tokens[index]);
             }
             //function call
             if (tokens[index + 1].tokenType == LEFT_PAREN){
@@ -259,41 +233,52 @@ namespace KLang{
                 }
             }else{
                 //exact copy of code in literal section
-                TokenType type = tokens[index + 1].tokenType;
-                std::vector<TokenType> operators = {PLUS,MINUS,SLASH,STAR,
-                EQUAL_EQUAL,GREATER_EQUAL,LESS_EQUAL,LESS,GREATER};
-                bool isOp = false;
-                for (int i = 0; i < operators.size(); i ++){
-                    if (operators[i] == type){
-                        isOp = true;
-                        break;
-                    }
-                }
-                if (isOp){
-                    std::vector<Expression*> exprs = {new ExprVariable(tokens[index])};
-                    index ++;
-                    Expression* operation = new Expression({tokens[index]});
-                    operation->type = EXPR_PLACEHOLDER_OPERATOR;
-                    exprs.push_back(operation);
-                    index ++;
-                    Expression* otherSide = ReadExpression(tokens,index);
-                    if (otherSide->type == EXPR_ERROR){
-                        return new Expression(EXPR_ERROR);
-                    }
-                    if (otherSide->type == EXPR_LIST){
-                        ExprList* li = dynamic_cast<ExprList*>(otherSide);
-                        for (int i = 0; i < li->exprs.size(); i ++){
-                            exprs.push_back(li->exprs[i]);
-                        }
-                    }else{
-                        exprs.push_back(otherSide);
-                    }
-                    return new ExprList(exprs);
-                }
+                index ++;
+                Expression* start = new ExprVariable(tokens[index]);
+                return CheckForBinOp(tokens,index,start);
                 // return new ExprVariable(tokens[index++]);
             }
         }
         Error::SyntaxError(tokens[index].line,tokens[index].col,"reached unparsable token");
         return new Expression(EXPR_ERROR);
+    }
+    
+    Expression* Parser::CheckForBinOp(std::vector<Token> tokens, int& index, Expression* start){
+        int startIndex = index;
+        if (tokens[index].tokenType != ENDOFFILE){
+            //check for binary operator here, if there is one turn whole thing into expression list
+            TokenType type = tokens[index].tokenType;
+            std::vector<TokenType> operators = {PLUS,MINUS,SLASH,STAR,
+            EQUAL_EQUAL,GREATER_EQUAL,LESS_EQUAL,LESS,GREATER};
+            bool isOp = false;
+            for (int i = 0; i < operators.size(); i ++){
+                if (operators[i] == type){
+                    isOp = true;
+                    break;
+                }
+            }
+            if (isOp){
+                std::vector<Expression*> exprs = {start};
+                Expression* operation = new Expression({tokens[index]});
+                operation->type = EXPR_PLACEHOLDER_OPERATOR;
+                exprs.push_back(operation);
+                index ++;
+                Expression* otherSide = ReadExpression(tokens,index);
+                if (otherSide->type == EXPR_ERROR){
+                    return new Expression(EXPR_ERROR);
+                }
+                if (otherSide->type == EXPR_LIST){
+                    ExprList* li = dynamic_cast<ExprList*>(otherSide);
+                    for (int i = 0; i < li->exprs.size(); i ++){
+                        exprs.push_back(li->exprs[i]);
+                    }
+                }else{
+                    exprs.push_back(otherSide);
+                }
+                return new ExprList(exprs);
+            }
+        }
+        index = startIndex;
+        return start;
     }
 }

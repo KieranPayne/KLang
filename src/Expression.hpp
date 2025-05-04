@@ -14,6 +14,7 @@ namespace KLang{
         EXPR_UNARY,
         EXPR_VARIABLE,
         EXPR_SEQUENCE,
+        EXPR_GROUPING,
         EXPR_PLACEHOLDER_OPERATOR,
         EXPR_ERROR
     };
@@ -81,6 +82,12 @@ namespace KLang{
         public:
         std::vector<Expression*> exprs;
         ExprSequence(std::vector<Expression*> exprs);
+        void Print();
+    };
+    class ExprGrouping : public Expression{
+        public:
+        Expression* expr;
+        ExprGrouping(Expression* expr);
         void Print();
     };
     
