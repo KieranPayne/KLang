@@ -171,12 +171,18 @@ namespace KLang{
         return new ObjNull();
     }
     Object* ExprAssignment::Evaluate(Environment& e){
-        if (e.map.count(tokens[0].lexeme) > 0){
+        Object* result = expr->Evaluate(e);
+        if (result == e.map[tokens[0].lexeme]){
+            return result;
+        }else{
             delete e.map[tokens[0].lexeme];
+            e.map[tokens[0].lexeme] = result;
+            result->variableVal = true;
+            return result;
         }
-        e.map[tokens[0].lexeme] = expr->Evaluate(e);
-        e.map[tokens[0].lexeme]->variableVal = true;
-        return e.map[tokens[0].lexeme];
+        // e.map[tokens[0].lexeme] = expr->Evaluate(e);
+        // e.map[tokens[0].lexeme]->variableVal = true;
+        // return e.map[tokens[0].lexeme];
         // return new ObjNull();
     }
     Object* ExprVariable::Evaluate(Environment& e){

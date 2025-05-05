@@ -57,6 +57,7 @@ namespace KLang
                 if (!foundClose){
                     Error::SyntaxError(line,i-startIndex-1,"missing closing quote");
                 }
+                str = DeEscape(str);
                 tokens.push_back(Token(STRING,str,line,i - startIndex));
                 continue;
             }
@@ -166,6 +167,56 @@ namespace KLang
             }
         }
         return true;
+    }
+    std::string Scanner::DeEscape(std::string str){
+        std::string result = "";
+        for (int i = 0; i < str.size() - 1; i ++){
+            if (str[i] == '\\'){
+                i ++;
+                switch (str[i]){
+                    case '\\':
+                    result += '\\';
+                    break;
+                    case '\'':
+                    result += '\'';
+                    break;
+                    case '\"':
+                    result += '\"';
+                    break;
+                    case 'n':
+                    result += '\n';
+                    break;
+                    case 'r':
+                    result += '\r';
+                    break;
+                    case 't':
+                    result += '\t';
+                    break;
+                    case 'b':
+                    result += '\b';
+                    break;
+                    case 'f':
+                    result += '\f';
+                    break;
+                    case '0':
+                    result += '\0';
+                    break;
+                    case 'v':
+                    result += '\v';
+                    break;
+                    case 'a':
+                    result += '\a';
+                    break;
+                    default:
+                    result += str[i];
+                    break;
+                }
+            }else{
+                result += str[i];
+            }
+        }
+        result += str[str.size()-1];
+        return result;
     }
     
 };

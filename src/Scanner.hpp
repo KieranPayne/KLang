@@ -6,5 +6,6 @@ namespace KLang{
         public:
         static std::vector<Token> Scan(std::string text);
         static bool stringFound(std::string text, std::string str, int startIndex);
+        static std::string DeEscape(std::string str);
     };
 }
