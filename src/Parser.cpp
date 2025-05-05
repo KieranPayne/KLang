@@ -249,7 +249,7 @@ namespace KLang{
                 if (expressions.size() == 1){
                     return new ExprAssignment(name,TryParseList(expressions[0]));
                 }else{
-                    return new ExprAssignment(name, ParseExprList(new ExprList(expressions)));
+                    return new ExprAssignment(name, TryParseList(new ExprList(expressions)));
                 }
             }else{
                 //exact copy of code in literal section
@@ -305,11 +305,14 @@ namespace KLang{
         return start;
     }
     Expression* Parser::ParseExprList(ExprList* li){
-        li->Print();
-        std::cout << std::endl;
         //order of precedence: (essentially bidmas in reverse, plus boolean)
         //+ - * / >= <= > < == != | &
         li->CollectSubLists();
+        for (int i = 0; i < li->exprs.size(); i ++){
+            if (li->exprs[i]->type == EXPR_GROUPING){
+                li->exprs[i] = TryParseList(li->exprs[i]);
+            }
+        }
         if (li->exprs.size() == 1){
             return li->exprs[0];
         }
@@ -348,7 +351,9 @@ namespace KLang{
         }else if (expr->type == EXPR_GROUPING){
             ExprGrouping* g = dynamic_cast<ExprGrouping*>(expr);
             g->expr = TryParseList(g->expr);
-        }else{
+            return g;
+        }
+        else{
             return expr;
         }
     }
