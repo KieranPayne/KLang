@@ -1,2 +1,1 @@
-x = "hello world!";
-print(x);
+print("end of program");

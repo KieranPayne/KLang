@@ -3,16 +3,39 @@
 #include "Error.hpp"
 #include <iostream>
 #include "Interpreter.hpp"
+#include "Scanner.hpp"
 namespace KLang{
     void Parser::Parse(std::vector<Token> tokens){
         ExprSequence* seq = ParseToSequence(tokens);
-        for (int i = 0; i < seq->exprs.size(); i ++){
-            seq->exprs[i]->Print();
-            std::cout << std::endl;
+        for (int i = 0; i < seq->exprs.size();i ++){
+            seq[i].Print();
+            std::cout << "\n";
         }
-        std:: cout << std::endl;
-        Interpreter i = Interpreter(seq);
-        i.Run();
+        Interpreter i = Interpreter();
+        i.Run(seq);
+        std::cout << std::endl;
+        std::cout << "starting command line input" << std::endl;
+        bool showTree = false;
+        while (true){
+            std::cout << ">>";
+            std::string line;
+            std::getline(std::cin,line);
+            if (line == "end"){
+                break;
+            }
+            std::vector<Token> tokens = Scanner::Scan(line);
+            ExprSequence* seq = ParseToSequence(tokens);
+            if (showTree){
+                for (int i = 0; i < seq->exprs.size(); i ++){
+                    seq->exprs[i]->Print();
+                    std::cout << std::endl;
+                }
+            }
+            std::cout << ">>";
+            i.Run(seq);
+            std::cout << std::endl;
+            
+        }
     }
     //splits expression into sub expressions based on binary operators
     ExprSequence* Parser::ParseToSequence(std::vector<Token> tokens){
@@ -110,7 +133,7 @@ namespace KLang{
                 return new Expression(newTokens);
             }
             if (type == LEFT_PAREN){
-                newTokens.push_back(Token(ENDOFFILE,"",0,0));
+                newTokens.push_back(Token(SEMICOLON,";",0,0));
                 int test = 0;
                 ExprGrouping* e = new ExprGrouping(ReadExpression(newTokens,test));
                 // index ++;
@@ -199,7 +222,8 @@ namespace KLang{
         //identifier (could be either variable or function)
         }else if (type == IDENTIFIER){
             if (tokens[index + 1].tokenType == ENDOFFILE){
-                return new ExprVariable(tokens[index]);
+                // return new ExprVariable(tokens[index]);
+                Error::SyntaxError(tokens[index].line,tokens[index].col,"expected semicolon");
             }
             //function call
             if (tokens[index + 1].tokenType == LEFT_PAREN){

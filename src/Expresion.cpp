@@ -107,7 +107,7 @@ namespace KLang{
         if (tokens[0].tokenType == INTEGER){
             return new ObjInteger(std::stoi(tokens[0].lexeme));
         }else if (tokens[0].tokenType == REAL){
-            return new ObjReal(std::stof(tokens[0].lexeme));
+            return new ObjReal(std::stod(tokens[0].lexeme));
         }else if (tokens[0].tokenType == TRUE){
             return new ObjBool(true);
         }else if (tokens[0].tokenType == FALSE){
@@ -119,15 +119,38 @@ namespace KLang{
         }
         return new ObjNull();
     }
+    Object* ExprIf::Evaluate(Environment& e){
+        Object* condResult = condition->Evaluate(e);
+        ObjBool* boolResult = dynamic_cast<ObjBool*>(condResult->Cast(OBJ_BOOL));
+        if (boolResult->value){
+            delete boolResult;
+            return trueBlock->Evaluate(e);
+        }else{
+            delete boolResult;
+            return falseBlock->Evaluate(e);
+        }
+    }
+
     Object* ExprFuncCall::Evaluate(Environment& e){
         if (tokens[0].lexeme == "print"){
-            args[0]->Evaluate(e)->Print();
+            Object* result = args[0]->Evaluate(e);
+            ObjString* strResult = dynamic_cast<ObjString*>(result->Cast(OBJ_STRING));
+            strResult->Print();
+            delete strResult;
+            if (!result->variableVal){
+                delete result;
+            }
         }
         return new ObjNull();
     }
     Object* ExprAssignment::Evaluate(Environment& e){
+        if (e.map.count(tokens[0].lexeme) > 0){
+            delete e.map[tokens[0].lexeme];
+            e.map.erase(tokens[0].lexeme);
+        }
         e.map[tokens[0].lexeme] = expr->Evaluate(e);
-        return new ObjNull();
+        e.map[tokens[0].lexeme]->variableVal = true;
+        return e.map[tokens[0].lexeme];
     }
     Object* ExprVariable::Evaluate(Environment& e){
         if (e.map.count(tokens[0].lexeme) > 0){
@@ -146,21 +169,36 @@ namespace KLang{
         }
         return new ObjNull();
     }
+    Object* ExprGrouping::Evaluate(Environment& e){
+        Object* result = expr->Evaluate(e);
+        return result;
+    }
     Object* ExprBinaryOp::Evaluate(Environment& e){
         Object* lhs = this->lhs->Evaluate(e);
         Object* rhs = this->rhs->Evaluate(e);
         TokenType type = tokens[0].tokenType;
-        if (type == PLUS){
-            // if (lhs->type == OBJ_INTEGER && rhs->type == OBJ_INTEGER){
-            //     dynamic_cast<ObjInteger*>(lhs)->value += dynamic_cast<ObjInteger*>(rhs)->value;
-            //     delete rhs;
-            //     return lhs;
-            // }
-            Object* result = lhs->Add(rhs);
-            delete rhs;
-            return result;
+        bool convert = true;
+        constexpr TokenType nonConverts[] = {
+            AND,OR,
+            EQUAL_EQUAL
+        };
+        int num = sizeof(nonConverts)/sizeof(TokenType);
+        for (int i = 0; i < num; i ++){
+            if (type == nonConverts[i]){
+                convert = false;
+                break;
+            }
         }
+        Object* result = lhs->Operation(rhs,type,convert);
+        if (!lhs->variableVal){
+            delete lhs;
+        }
+        if (!rhs->variableVal){
+            delete rhs;
+        }
+        return result;
     }
+
     void Expression::Print(){
         std::cout << "[GENERIC ";
         for (int i = 0; i < tokens.size(); i ++){

@@ -1,12 +1,13 @@
 #include "Interpreter.hpp"
 
 namespace KLang{
-    Interpreter::Interpreter(Expression* program){
-        this->program = program;
+    Interpreter::Interpreter(){
+        // this->program = program;
         env = Environment();
     }
-    void Interpreter::Run(){
+    void Interpreter::Run(Expression* program){
+        this->program = program;
         //evaluate first expression here
-        program->Evaluate(env);
+        this->program->Evaluate(env);
     }
 }

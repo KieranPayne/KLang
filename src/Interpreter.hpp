@@ -6,7 +6,7 @@ namespace KLang{
         public:
         Expression* program;
         Environment env;
-        Interpreter(Expression* program);
-        void Run();
+        Interpreter();
+        void Run(Expression* program);
     };
 }

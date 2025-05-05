@@ -47,6 +47,7 @@ namespace KLang{
         Expression* falseBlock;
         Expression* condition;
         ExprIf(Expression* condition, Expression* trueBlock, Expression* falseBlock);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     class ExprWhile : public Expression{
@@ -101,6 +102,7 @@ namespace KLang{
         public:
         Expression* expr;
         ExprGrouping(Expression* expr);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     class ExprBreak : public Expression{

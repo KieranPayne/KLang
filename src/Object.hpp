@@ -1,5 +1,7 @@
 #pragma once
 #include <string>   
+#include <vector>
+#include "Token.hpp"
 #include "Error.hpp"
 namespace KLang{
     enum ObjectType{
@@ -10,14 +12,18 @@ namespace KLang{
         OBJ_NULL,
         OBJ_NONE
     };
+    extern const std::vector<ObjectType> precedence; 
     class ObjNull;
     class Object{
         public:
         ObjectType type;
         Object();
         ~Object(){}
+        virtual Object* Operation(Object* other, TokenType op, bool convert);
+        virtual Object* OperationSameType(Object* other, TokenType op, bool lhs);
         virtual void Print();
         virtual Object* Cast(ObjectType type){}
+        bool variableVal;
     };
     class ObjString : public Object{
         public:
@@ -25,6 +31,7 @@ namespace KLang{
         ObjString(std::string value);
         ~ObjString(){}
         void Print();
+        Object* OperationSameType(Object* other, TokenType op, bool lhs);
         Object* Cast(ObjectType type);
     };
     class ObjBool : public Object{
@@ -33,6 +40,7 @@ namespace KLang{
         ObjBool(bool value);
         ~ObjBool(){}
         void Print();
+        Object* OperationSameType(Object* other, TokenType op, bool lhs);
         Object* Cast(ObjectType type);
 
     };
@@ -42,15 +50,17 @@ namespace KLang{
         ObjInteger(int value);
         ~ObjInteger(){}
         void Print();
+        Object* OperationSameType(Object* other, TokenType op, bool lhs);
         Object* Cast(ObjectType type);
 
     };
     class ObjReal : public Object{
         public:
-        float value;
-        ObjReal(float value);
+        double value;
+        ObjReal(double value);
         ~ObjReal(){}
         void Print();
+        Object* OperationSameType(Object* other, TokenType op, bool lhs);
         Object* Cast(ObjectType type);
 
     };
@@ -59,6 +69,7 @@ namespace KLang{
         ObjNull();
         ~ObjNull(){}
         void Print();
+        Object* OperationSameType(Object* other, TokenType op, bool lhs);
         Object* Cast(ObjectType type);
     };
 }
