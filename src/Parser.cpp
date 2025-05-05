@@ -5,37 +5,9 @@
 #include "Interpreter.hpp"
 #include "Scanner.hpp"
 namespace KLang{
-    void Parser::Parse(std::vector<Token> tokens){
+    Expression* Parser::Parse(std::vector<Token> tokens){
         ExprSequence* seq = ParseToSequence(tokens);
-        for (int i = 0; i < seq->exprs.size();i ++){
-            seq[i].Print();
-            std::cout << "\n";
-        }
-        Interpreter i = Interpreter();
-        i.Run(seq);
-        std::cout << std::endl;
-        std::cout << "starting command line input" << std::endl;
-        bool showTree = false;
-        while (true){
-            std::cout << ">>";
-            std::string line;
-            std::getline(std::cin,line);
-            if (line == "end"){
-                break;
-            }
-            std::vector<Token> tokens = Scanner::Scan(line);
-            ExprSequence* seq = ParseToSequence(tokens);
-            if (showTree){
-                for (int i = 0; i < seq->exprs.size(); i ++){
-                    seq->exprs[i]->Print();
-                    std::cout << std::endl;
-                }
-            }
-            std::cout << ">>";
-            i.Run(seq);
-            std::cout << std::endl;
-            
-        }
+        return seq;
     }
     //splits expression into sub expressions based on binary operators
     ExprSequence* Parser::ParseToSequence(std::vector<Token> tokens){

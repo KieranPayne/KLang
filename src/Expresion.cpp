@@ -124,11 +124,38 @@ namespace KLang{
         ObjBool* boolResult = dynamic_cast<ObjBool*>(condResult->Cast(OBJ_BOOL));
         if (boolResult->value){
             delete boolResult;
+            if (!condResult->variableVal){
+                delete condResult;
+            }
             return trueBlock->Evaluate(e);
         }else{
             delete boolResult;
+            if (!condResult->variableVal){
+                delete condResult;
+            }
             return falseBlock->Evaluate(e);
         }
+    }
+
+    Object* ExprWhile::Evaluate(Environment& e){
+        while (true){
+            Object* condResult = condition->Evaluate(e);
+            ObjBool* boolResult = dynamic_cast<ObjBool*>(condResult->Cast(OBJ_BOOL));
+            bool val = boolResult->value;
+            delete boolResult;
+            if (!condResult->variableVal){
+                delete condResult;
+            }
+            if (boolResult->value){
+                Object* result = loopBlock->Evaluate(e);
+                if (!result->variableVal){
+                    delete result;
+                }
+            }else{
+                break;
+            }
+        }
+        return new ObjNull();
     }
 
     Object* ExprFuncCall::Evaluate(Environment& e){
@@ -146,11 +173,11 @@ namespace KLang{
     Object* ExprAssignment::Evaluate(Environment& e){
         if (e.map.count(tokens[0].lexeme) > 0){
             delete e.map[tokens[0].lexeme];
-            e.map.erase(tokens[0].lexeme);
         }
         e.map[tokens[0].lexeme] = expr->Evaluate(e);
         e.map[tokens[0].lexeme]->variableVal = true;
         return e.map[tokens[0].lexeme];
+        // return new ObjNull();
     }
     Object* ExprVariable::Evaluate(Environment& e){
         if (e.map.count(tokens[0].lexeme) > 0){
@@ -161,13 +188,14 @@ namespace KLang{
     }
     Object* ExprSequence::Evaluate(Environment& e){
         for (int i = 0; i < exprs.size(); i ++){
-            if (exprs[i]->type == EXPR_RETURN){
-                return exprs[i]->Evaluate(e);
-            }else{
-                exprs[i]->Evaluate(e);
+            Object* result = exprs[i]->Evaluate(e);
+            if (i == exprs.size() - 1){
+                return result;
+            }
+            if (!result->variableVal){
+                delete result;
             }
         }
-        return new ObjNull();
     }
     Object* ExprGrouping::Evaluate(Environment& e){
         Object* result = expr->Evaluate(e);

@@ -55,6 +55,7 @@ namespace KLang{
         Expression* condition;
         Expression* loopBlock;
         ExprWhile(Expression* condition, Expression* loopBlock);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     class ExprFuncCall : public Expression{

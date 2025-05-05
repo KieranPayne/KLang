@@ -7,6 +7,8 @@ namespace KLang{
         Expression* program;
         Environment env;
         Interpreter();
-        void Run(Expression* program);
+        Object* Run(Expression* program);
+        void RunCommandLine();
+        void RunCodeInFile();
     };
 }
