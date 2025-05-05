@@ -9,6 +9,6 @@ namespace KLang{
         Interpreter();
         Object* Run(Expression* program);
         void RunCommandLine();
-        void RunCodeInFile();
+        void RunCodeInFile(bool showTree);
     };
 }

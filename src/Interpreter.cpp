@@ -28,7 +28,7 @@ namespace KLang{
             if (line == "end"){
                 break;
             }else if (line == "refresh"){
-                RunCodeInFile();
+                RunCodeInFile(showTree);
                 continue;
             }
             std::vector<Token> tokens = Scanner::Scan(line);
@@ -51,7 +51,7 @@ namespace KLang{
             
         }
     }
-    void Interpreter::RunCodeInFile()
+    void Interpreter::RunCodeInFile(bool showTree)
     {    
         std::ifstream file("./testCode.klang");
         std::string str;
@@ -62,7 +62,11 @@ namespace KLang{
             file_contents.push_back('\n');
         }  
         std::vector<Token> tokens = Scanner::Scan(file_contents);
-        Object* result = Run(Parser::Parse(tokens));
+        Expression* tree = Parser::Parse(tokens);
+        if (showTree){
+            tree->Print();
+        }
+        Object* result = Run(tree);
         if (!result->variableVal){
             delete result;
         }

@@ -170,8 +170,8 @@ namespace KLang
     }
     std::string Scanner::DeEscape(std::string str){
         std::string result = "";
-        for (int i = 0; i < str.size() - 1; i ++){
-            if (str[i] == '\\'){
+        for (int i = 0; i < str.size(); i ++){
+            if (str[i] == '\\' && i < str.size() - 1){
                 i ++;
                 switch (str[i]){
                     case '\\':
@@ -215,7 +215,6 @@ namespace KLang
                 result += str[i];
             }
         }
-        result += str[str.size()-1];
         return result;
     }
     
