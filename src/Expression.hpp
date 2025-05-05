@@ -1,6 +1,8 @@
 #pragma once
 #include "Token.hpp"
 #include <vector>
+#include "Environment.hpp"
+#include "Object.hpp"
 namespace KLang{
     enum ExpressionType{
         EXPR_BLANK,
@@ -30,11 +32,13 @@ namespace KLang{
         Expression(ExpressionType type);
         Expression();
         void Join(Expression other);
+        virtual Object* Evaluate(Environment& e);
         virtual void Print();
     };
     class ExprLiteral : public Expression{
         public:
         ExprLiteral(Token t);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     class ExprIf : public Expression{
@@ -56,12 +60,14 @@ namespace KLang{
         public:
         std::vector<Expression*> args;
         ExprFuncCall(Token name, std::vector<Expression*> args);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     class ExprAssignment : public Expression{
         public:
         Expression* expr;
         ExprAssignment(Token name, Expression* expr);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     //list of expressions
@@ -81,12 +87,14 @@ namespace KLang{
     class ExprVariable : public Expression{
         public:
         ExprVariable(Token name);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     class ExprSequence : public Expression{
         public:
         std::vector<Expression*> exprs;
         ExprSequence(std::vector<Expression*> exprs);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     class ExprGrouping : public Expression{
@@ -116,6 +124,7 @@ namespace KLang{
         Expression* lhs;
         Expression* rhs;
         ExprBinaryOp(Token op, Expression* lhs, Expression* rhs);
+        Object* Evaluate(Environment& e);
         void Print();
     };
     

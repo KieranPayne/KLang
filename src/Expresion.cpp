@@ -1,6 +1,5 @@
 #include "Expression.hpp"
 #include <iostream>
-
 namespace KLang{
     Expression::Expression(std::vector<Token> tokens){
         type = EXPR_GENERIC;
@@ -100,6 +99,67 @@ namespace KLang{
             }
         }
         exprs = newList;
+    }
+    Object* Expression::Evaluate(Environment& e){
+        return new ObjNull();
+    }
+    Object* ExprLiteral::Evaluate(Environment& e){
+        if (tokens[0].tokenType == INTEGER){
+            return new ObjInteger(std::stoi(tokens[0].lexeme));
+        }else if (tokens[0].tokenType == REAL){
+            return new ObjReal(std::stof(tokens[0].lexeme));
+        }else if (tokens[0].tokenType == TRUE){
+            return new ObjBool(true);
+        }else if (tokens[0].tokenType == FALSE){
+            return new ObjBool(false);
+        }else if (tokens[0].tokenType == STRING){
+            return new ObjString(tokens[0].lexeme);
+        }else if (tokens[0].tokenType == NULLVAL){
+            return new ObjNull();
+        }
+        return new ObjNull();
+    }
+    Object* ExprFuncCall::Evaluate(Environment& e){
+        if (tokens[0].lexeme == "print"){
+            args[0]->Evaluate(e)->Print();
+        }
+        return new ObjNull();
+    }
+    Object* ExprAssignment::Evaluate(Environment& e){
+        e.map[tokens[0].lexeme] = expr->Evaluate(e);
+        return new ObjNull();
+    }
+    Object* ExprVariable::Evaluate(Environment& e){
+        if (e.map.count(tokens[0].lexeme) > 0){
+            return e.map[tokens[0].lexeme];
+        }else{
+            return new ObjNull();
+        }
+    }
+    Object* ExprSequence::Evaluate(Environment& e){
+        for (int i = 0; i < exprs.size(); i ++){
+            if (exprs[i]->type == EXPR_RETURN){
+                return exprs[i]->Evaluate(e);
+            }else{
+                exprs[i]->Evaluate(e);
+            }
+        }
+        return new ObjNull();
+    }
+    Object* ExprBinaryOp::Evaluate(Environment& e){
+        Object* lhs = this->lhs->Evaluate(e);
+        Object* rhs = this->rhs->Evaluate(e);
+        TokenType type = tokens[0].tokenType;
+        if (type == PLUS){
+            // if (lhs->type == OBJ_INTEGER && rhs->type == OBJ_INTEGER){
+            //     dynamic_cast<ObjInteger*>(lhs)->value += dynamic_cast<ObjInteger*>(rhs)->value;
+            //     delete rhs;
+            //     return lhs;
+            // }
+            Object* result = lhs->Add(rhs);
+            delete rhs;
+            return result;
+        }
     }
     void Expression::Print(){
         std::cout << "[GENERIC ";

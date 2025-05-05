@@ -2,6 +2,7 @@
 #include "Expression.hpp"
 #include "Error.hpp"
 #include <iostream>
+#include "Interpreter.hpp"
 namespace KLang{
     void Parser::Parse(std::vector<Token> tokens){
         ExprSequence* seq = ParseToSequence(tokens);
@@ -10,6 +11,8 @@ namespace KLang{
             std::cout << std::endl;
         }
         std:: cout << std::endl;
+        Interpreter i = Interpreter(seq);
+        i.Run();
     }
     //splits expression into sub expressions based on binary operators
     ExprSequence* Parser::ParseToSequence(std::vector<Token> tokens){
