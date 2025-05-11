@@ -12,17 +12,18 @@ namespace KLang{
         Token Previous();
         Token Advance();
         Token Current();
+        void Consume(TokenType type, std::string message);
         bool atEnd();
         bool Check(TokenType type);
         bool Match(std::vector<TokenType> types);
-        TreeNode::Node* Expression();
-        TreeNode::Node* Equality();
-        TreeNode::Node* Comparison();
-        TreeNode::Node* Term();
-        TreeNode::Node* Factor();
-        TreeNode::Node* Unary();
-        TreeNode::Node* Grouping();
-        TreeNode::Node* Primary();
-        TreeNode::Node* Literal();
+        TreeNode::Node* expression();
+        TreeNode::Node* equality();
+        TreeNode::Node* comparison();
+        TreeNode::Node* term();
+        TreeNode::Node* factor();
+        TreeNode::Node* unary();
+        TreeNode::Node* grouping();
+        TreeNode::Node* primary();
+        TreeNode::Node* literal();
     };
 }

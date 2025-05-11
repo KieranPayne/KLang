@@ -29,6 +29,18 @@ namespace KLang{
             Binary(Node* lhs, Node* rhs, Token op);
             void Print();
         };
+        class Unary : public Node{
+            public:
+            Node* node;
+            Unary(Node* node, Token op);
+            void Print();
+        };
+        class Grouping : public Node{
+            public:
+            Node* node;
+            Grouping(Node* node);
+            void Print();
+        };
 
     }
 }

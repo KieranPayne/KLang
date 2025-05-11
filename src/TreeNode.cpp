@@ -18,6 +18,13 @@ namespace KLang{
             this->rhs = rhs;
             tokens.push_back(op);
         }
+        Unary::Unary(Node* node, Token op){
+            this->node = node;
+            tokens.push_back(op);
+        }
+        Grouping::Grouping(Node* node){
+            this->node = node;
+        }
         void Node::Print(){
             std::cout << "[ NODE";
             for (int i = 0; i < tokens.size(); i ++){
@@ -37,7 +44,18 @@ namespace KLang{
             lhs->Print();
             rhs->Print();
             std::cout << " ]";
-            
+        }
+        void Unary::Print(){
+            std::cout << "[ UNARY ";
+            std::cout << tokens[0].lexeme;
+            std::cout << " ";
+            node->Print();
+            std::cout << " ]";
+        }
+        void Grouping::Print(){
+            std::cout << "[ GROUPING";
+            node->Print();
+            std::cout << " ]";
         }
     }
 }
