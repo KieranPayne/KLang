@@ -1,11 +1,1 @@
 a = 0;
-b = 10;
-while (a < b){
-    a = a + 1;
-    c = 0;
-    while (c < a){
-        print("*");
-        c = c + 1;
-    }
-    print("\n");
-}

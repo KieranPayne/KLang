@@ -1,10 +1,17 @@
 #include <iostream>
 #include <fstream>
-#include "Interpreter.hpp"
-using namespace KLang;
+#include <vector>
+#include "Token.hpp"
+#include "Scanner.hpp"
 int main(){
-    // std::string textString = "print(\"hello world!\")";
-    Interpreter i;
-    i.RunCommandLine();
+    std::ifstream file("testCode.klang");
+    std::string line;
+    std::string code = "";
+    while (std::getline(file,line)){
+        code += line;
+        code += "\n";
+    }
+    std::vector<KLang::Token> tokens = KLang::Scanner::Scan(code);
+
     return 0;
 }

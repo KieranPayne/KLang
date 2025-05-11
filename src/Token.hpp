@@ -19,7 +19,7 @@ namespace KLang{
         AND, CLASS, ELSE, FALSE, FN, FOR, IF, NULLVAL, OR,
         RETURN, THIS, TRUE, VAR, WHILE,BREAK,CONTINUE,
 
-        ENDOFFILE
+        ENDOFFILE, TOKEN_ERROR
     };
     class Token{
         public:
