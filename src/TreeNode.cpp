@@ -26,36 +26,36 @@ namespace KLang{
             this->node = node;
         }
         void Node::Print(){
-            std::cout << "[ NODE";
+            std::cout << "[NODE";
             for (int i = 0; i < tokens.size(); i ++){
                 std::cout << " " << tokens[i].lexeme;
             }
             std::cout << "]";
         }
         void Literal::Print(){
-            std::cout << "[ LITERAL ";
+            std::cout << "(LITERAL ";
             std::cout << tokens[0].lexeme;
-            std::cout << " ]";
+            std::cout << ")";
         }
         void Binary::Print(){
-            std::cout << "[ BINARY ";
+            std::cout << "[BINARY ";
             std::cout << tokens[0].lexeme;
             std::cout << " ";
             lhs->Print();
             rhs->Print();
-            std::cout << " ]";
+            std::cout << "]";
         }
         void Unary::Print(){
-            std::cout << "[ UNARY ";
+            std::cout << "[UNARY ";
             std::cout << tokens[0].lexeme;
             std::cout << " ";
             node->Print();
-            std::cout << " ]";
+            std::cout << "]";
         }
         void Grouping::Print(){
-            std::cout << "[ GROUPING";
+            std::cout << "{GROUPING ";
             node->Print();
-            std::cout << " ]";
+            std::cout << "}";
         }
     }
 }
