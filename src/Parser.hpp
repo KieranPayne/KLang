@@ -3,9 +3,17 @@
 #include "Token.hpp"
 #include "TreeNode.hpp"
 namespace KLang{
+    class Error{
+        public:
+        bool sync;
+        Token token;
+        std::string message;
+        Error(Token token, std::string message, bool sync);
+    };
     class Parser{
         public:
         int current = 0;
+        bool panicMode = false;
         std::vector<Token> tokens;
         Parser(std::vector<Token> tokens);
         private:
@@ -25,5 +33,7 @@ namespace KLang{
         TreeNode::Node* grouping();
         TreeNode::Node* primary();
         TreeNode::Node* literal();
+        void ReportError(Error e);
     };
+    
 }

@@ -1,14 +1,22 @@
 #include "Parser.hpp"
+#include <iostream>
 namespace KLang{
     using namespace TreeNode;
     Parser::Parser(std::vector<Token> tokens){
         this->tokens = tokens;
         current = 0;
-        expression()->Print();
+        panicMode = false;
+        Node* expr = expression();
+        if (!panicMode){
+            expr->Print();
+        }
     }
 
     Node* Parser::expression(){
-        return equality();
+        try{
+            return equality();
+        }catch (Error e){
+        }
     }
     Node* Parser::equality(){
         Node* node = comparison();
@@ -67,7 +75,11 @@ namespace KLang{
         return literal();
     }
     Node* Parser::literal(){
-        return new Literal(Advance());
+        if (Match({STRING,INTEGER,REAL,TRUE,FALSE,NULLVAL})){
+            return new Literal(Advance());
+        }else{
+            ReportError(Error(Advance(),"expected literal",true));
+        }
     }
 
     //helper functions
@@ -78,12 +90,20 @@ namespace KLang{
         return tokens[current];
     }
     Token Parser::Advance(){
-        return tokens[current ++];
+        current ++;
+        Token t = Current();
+        while (t.tokenType == TOKEN_ERROR){
+            ReportError(Error(t,t.lexeme,false));
+            tokens.erase(tokens.begin() + current);
+            t = Current();
+        }
+        return Previous();
     }
     bool Parser::atEnd(){
         return Current().tokenType == EOF;
     }
     bool Parser::Check(TokenType type){
+        
         return Current().tokenType == type;
     }
     bool Parser::Match(std::vector<TokenType> types){
@@ -98,8 +118,27 @@ namespace KLang{
         if (Check(type)){
             Advance();
         }else{
+            ReportError(Error(Current(),message,true));
             //error handling goes here
         }
     }
+    
+    void Parser::ReportError(Error e){
+        panicMode = true;
+        if (e.token.tokenType == ENDOFFILE){
+            std::cout << "error at end of file";
+        }else{
+            std::cout << "error at line: " << (e.token.line + 1) << " col: " << (e.token.col + 1);
+        }
 
+        std::cout << "\n" << e.message << "\n";
+        if (e.sync){
+            throw e;
+        }
+    }
+    Error::Error(Token token, std::string message, bool sync){
+        this->token= token;
+        this->sync = sync;
+        this->message = message;
+    }
 }

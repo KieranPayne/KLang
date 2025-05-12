@@ -55,9 +55,11 @@ namespace KLang
                 }
                 if (!foundClose){
                     tokens.push_back(Token(TOKEN_ERROR,"missing closing quote",line,i-startIndex));
+                }else{
+                    str = DeEscape(str);
+                    tokens.push_back(Token(STRING,str,line,i - startIndex));
                 }
-                str = DeEscape(str);
-                tokens.push_back(Token(STRING,str,line,i - startIndex));
+                
                 continue;
             }
             bool tokenFound = false;
@@ -141,11 +143,12 @@ namespace KLang
                         std::string str = "unexpected char found:";
                         str += text[i];
                         tokens.push_back(Token(TOKEN_ERROR, str, line,i-startIndex));
-
-                        i ++;
+                        // i ++;
+                    }else{
+                        i--;
+                        tokens.push_back(Token(IDENTIFIER, val, line,i-startIndex));
                     }
-                    i--;
-                    tokens.push_back(Token(IDENTIFIER, val, line,i-startIndex));
+                    
                 }
             }
         }

@@ -11,4 +11,7 @@ namespace KLang{
     void Token::Print(){
         std::cout << "TOKEN type:" << tokenType << " lexeme:" << lexeme << " line:" << line << " col:" << col << std::endl;
     }
+    Token::Token(){
+        
+    }
 };

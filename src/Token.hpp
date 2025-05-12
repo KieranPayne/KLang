@@ -30,7 +30,7 @@ namespace KLang{
         
         void Print();
         Token(TokenType tokenType, std::string lexeme, int line, int col);
-        
+        Token();
     };
     
 }
