@@ -11,12 +11,76 @@ namespace KLang{
             expr->Print();
         }
     }
-
-    Node* Parser::expression(){
-        try{
-            return equality();
-        }catch (Error e){
+    void Parser::SkipStatement(){
+        while (Current().tokenType != ENDOFFILE){
+            if (Current().tokenType == SEMICOLON){
+                current ++;
+                break;
+            }
+            switch (Advance().tokenType){
+                case CLASS:
+                case FN:
+                case VAR:
+                case FOR:
+                case WHILE:
+                case IF:
+                case RETURN:
+                case BREAK:
+                
+                return;
+            }
         }
+    }
+    Node* Parser::program(){
+        std::vector<Node*> stmts;
+        while (Current().tokenType != ENDOFFILE){
+            try{
+                stmts.push_back(statement());
+            }catch(Error e){
+                SkipStatement();
+            }
+        }
+    }
+    Node* Parser::statement(){
+        if (Check(WHILE)){
+            return whileStmt();
+        }else if (Check(IF)){
+            return ifStmt();
+        }else if (Check(FOR)){
+            return forStmt();
+        }else if (Check(RETURN)){
+            return returnStmt();
+        }else if (Check(LEFT_BRACE)){
+            return block();
+        }else if (Check(FN)){
+            return funcDec();
+        }else if (Check(VAR)){
+            return varDec();
+        }else if (Check(CLASS)){
+            return classDec();
+        }else{
+            return exprStmt();
+        }
+    }
+    Node* Parser::whileStmt(){
+        Consume(WHILE,"expect while");
+        Node* condition = grouping();
+        Node* block = statement();
+        return new While(condition,block);
+    }
+    Node* Parser::ifStmt(){
+        Consume(IF,"expect if");
+        Node* condition = grouping();
+        Node* trueBlock = statement();
+        Node* falseBlock = nullptr;
+        if (Check(ELSE)){
+            Consume(ELSE,"");
+            falseBlock = statement();
+        }
+        return new If(condition,trueBlock,falseBlock);
+    }
+    Node* Parser::expression(){
+        return equality();
     }
     Node* Parser::equality(){
         Node* node = comparison();

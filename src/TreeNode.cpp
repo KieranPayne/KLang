@@ -25,6 +25,18 @@ namespace KLang{
         Grouping::Grouping(Node* node){
             this->node = node;
         }
+        Program::Program(std::vector<Node*> statements){
+            this->statements = statements;
+        }
+        While::While(Node* condition, Node* block){
+            this->condition = condition;
+            this->block = block;
+        }
+        If::If(Node* condition, Node* trueBlock, Node* falseBlock){
+            this->condition = condition;
+            this->trueBlock = trueBlock;
+            this->falseBlock = falseBlock;
+        }
         void Node::Print(){
             std::cout << "[NODE";
             for (int i = 0; i < tokens.size(); i ++){
@@ -55,6 +67,28 @@ namespace KLang{
         void Grouping::Print(){
             std::cout << "{GROUPING ";
             node->Print();
+            std::cout << "}";
+        }
+        void Program::Print(){
+            std::cout << "[PROGRAM ";
+            for (int i = 0; i < statements.size(); i ++){
+                statements[i]->Print();
+            }
+            std::cout << "]";
+        }
+        void While::Print(){
+            std::cout << "{WHILE ";
+            condition->Print();
+            block->Print();
+            std::cout << "}";
+        }
+        void If::Print(){
+            std::cout << "{WHILE ";
+            condition->Print();
+            trueBlock->Print();
+            if (falseBlock != nullptr){
+                falseBlock->Print();
+            }
             std::cout << "}";
         }
     }

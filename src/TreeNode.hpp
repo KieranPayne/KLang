@@ -41,6 +41,27 @@ namespace KLang{
             Grouping(Node* node);
             void Print();
         };
+        class Program : public Node{
+            public:
+            std::vector<Node*> statements;
+            Program(std::vector<Node*> statements);
+            void Print();
+        };
+        class While : public Node{
+            public:
+            Node* condition;
+            Node* block;
+            While(Node* condition, Node* block);
+            void Print();
+        };
+        class If : public Node{
+            public:
+            Node* condition;
+            Node* trueBlock;
+            Node* falseBlock;
+            If(Node* condition, Node* trueBlock, Node* falseBlock);
+            void Print();
+        };
 
     }
 }
