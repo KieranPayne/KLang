@@ -1,3 +1,4 @@
 fn hi(x,y){
     print(x + y);
+    hi(x,y + 2);
 }

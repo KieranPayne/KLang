@@ -247,7 +247,7 @@ namespace KLang{
         while (!Check(RIGHT_PAREN)){
             args.push_back(expression());
             if (Check(COMMA)){
-                continue;
+                Advance();
             }
             if (Check(ENDOFFILE)){
                 ReportError(Error(Current(),"expect )",true));
