@@ -6,7 +6,7 @@ namespace KLang{
         this->tokens = tokens;
         current = 0;
         panicMode = false;
-        Node* expr = expression();
+        Node* expr = program();
         if (!panicMode){
             expr->Print();
         }
@@ -40,6 +40,7 @@ namespace KLang{
                 SkipStatement();
             }
         }
+        return new Program(stmts);
     }
     Node* Parser::statement(){
         if (Check(WHILE)){
@@ -56,8 +57,8 @@ namespace KLang{
             return funcDec();
         }else if (Check(VAR)){
             return varDec();
-        }else if (Check(CLASS)){
-            return classDec();
+        // }else if (Check(CLASS)){ //cba to do this rn
+        //     return classDec();
         }else{
             return exprStmt();
         }
@@ -79,8 +80,91 @@ namespace KLang{
         }
         return new If(condition,trueBlock,falseBlock);
     }
+    Node* Parser::exprStmt(){
+        Node* expr = expression();
+        Consume(SEMICOLON,"expect semicolon");
+        return new ExprStmt(expr);
+    }
+    Node* Parser::returnStmt(){
+        Consume(RETURN,"expect return");
+        Node* expr = nullptr;
+        if (!Check(SEMICOLON)){
+            expr = expression();
+        }
+        Consume(SEMICOLON,"expect semicolon");
+        return new ReturnStmt(expr);
+    }
+    Node* Parser::block(){
+        Consume(LEFT_BRACE,"expect {");
+        std::vector<Node*> statements = {};
+        while (!Check(RIGHT_BRACE)){
+            statements.push_back(statement());
+            if (Check(ENDOFFILE)){
+                ReportError(Error(Current(),"expect closing brace",true));
+            }
+        }
+        Advance();
+        return new Block(statements);
+    }
+    Node* Parser::forStmt(){
+        Consume(FOR, "expect for");
+        Consume(LEFT_PAREN, "expect left paren");
+        Node* dec = statement();
+        Node* condition = exprStmt();
+        Node* endOfLoop = statement();
+        Consume(RIGHT_PAREN, "expect left paren");
+        Node* loopBlock = statement();
+        return new For(dec,condition,endOfLoop,loopBlock);
+    }
+    Node* Parser::varDec(){
+        Consume(VAR,"expect var keyword");
+        Token name = Advance();
+        Node* expr = nullptr;
+        if (Check(EQUAL)){
+            Consume(EQUAL,"expect equal");
+            expr = expression();
+        }
+        Consume(SEMICOLON,"expect semicolon"); 
+        return new VarDec(name,expr);
+    }
+    Node* Parser::funcDec(){
+        Consume(FN, "expect fn keyword");
+        if (!Check(IDENTIFIER)){
+            ReportError(Error(Current(),"expect function name",true));
+        }
+        Token name = Advance();
+        std::vector<Token> args = {};
+        Consume(LEFT_PAREN, "expect left paren");
+        while (!Check(RIGHT_PAREN)){
+            if (!Check(IDENTIFIER)){
+                ReportError(Error(Current(),"expect right paren",true));
+            }
+            args.push_back(Advance());
+            if (Check(COMMA)){
+                Advance();
+            }
+        }
+        Advance(); //skip right paren
+        Node* codeBlock = block();
+        return new FuncDec(name,args,codeBlock);
+    }
     Node* Parser::expression(){
-        return equality();
+        return assignment();
+    }
+    Node* Parser::assignment(){
+        Node* expr = equality();
+        if (Check(EQUAL)){
+            Token name = Previous();
+            if (expr->type != NODE_VARIABLE){
+                ReportError(Error(name,"expect variable name",true));
+            }
+            delete expr;
+            Advance();
+            expr = expression();
+            Consume(SEMICOLON,"expect semicolon");
+            return new Assignment(name,expr);
+        }
+        return expr;
     }
     Node* Parser::equality(){
         Node* node = comparison();
@@ -135,15 +219,42 @@ namespace KLang{
         return new Grouping(node);
     }
     Node* Parser::primary(){
-        //todo: add func calls and variables
+        if (Check(IDENTIFIER)){
+            current++;
+            if (Check(LEFT_PAREN)){
+                current--;
+                return call();
+            }
+            current --;
+            return new Variable(Advance());
+        }
         return literal();
     }
     Node* Parser::literal(){
         if (Match({STRING,INTEGER,REAL,TRUE,FALSE,NULLVAL})){
             return new Literal(Advance());
         }else{
+            if (Check(TOKEN_ERROR)){
+                ReportError(Error(Current(),Current().lexeme,true));
+            }
             ReportError(Error(Advance(),"expected literal",true));
         }
+    }
+    Node* Parser::call(){
+        Token name = Advance();
+        Consume(LEFT_PAREN,"expect (");
+        std::vector<Node*> args = {};
+        while (!Check(RIGHT_PAREN)){
+            args.push_back(expression());
+            if (Check(COMMA)){
+                continue;
+            }
+            if (Check(ENDOFFILE)){
+                ReportError(Error(Current(),"expect )",true));
+            }
+        }
+        Advance();
+        return new Call(name,args);
     }
 
     //helper functions

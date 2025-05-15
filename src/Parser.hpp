@@ -28,16 +28,16 @@ namespace KLang{
         TreeNode::Node* program(); //DONE
         TreeNode::Node* whileStmt(); //DONE
         TreeNode::Node* ifStmt(); //DONE
-        TreeNode::Node* forStmt();
-        TreeNode::Node* varDec();
-        TreeNode::Node* funcDec();
-        TreeNode::Node* classDec();
-        TreeNode::Node* exprStmt();
-        TreeNode::Node* returnStmt();
-        TreeNode::Node* block();
+        TreeNode::Node* forStmt(); //DONE
+        TreeNode::Node* varDec(); //DONE
+        TreeNode::Node* funcDec(); //DONE
+        // TreeNode::Node* classDec(); too lazy to do this
+        TreeNode::Node* exprStmt(); //DONE
+        TreeNode::Node* returnStmt(); //DONE
+        TreeNode::Node* block(); //DONE
         TreeNode::Node* statement(); //DONE
-        TreeNode::Node* expression();
-        TreeNode::Node* assignment();
+        TreeNode::Node* expression(); //DONE
+        TreeNode::Node* assignment(); //DONE
         TreeNode::Node* call();
         TreeNode::Node* equality(); //DONE
         TreeNode::Node* comparison(); //DONE
