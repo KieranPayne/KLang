@@ -110,8 +110,9 @@ namespace KLang{
         Consume(FOR, "expect for");
         Consume(LEFT_PAREN, "expect left paren");
         Node* dec = statement();
-        Node* condition = exprStmt();
-        Node* endOfLoop = statement();
+        Node* condition = expression();
+        Consume(SEMICOLON,"expect semicolon");
+        Node* endOfLoop = expression();
         Consume(RIGHT_PAREN, "expect left paren");
         Node* loopBlock = statement();
         return new For(dec,condition,endOfLoop,loopBlock);
@@ -161,7 +162,7 @@ namespace KLang{
             delete expr;
             Advance();
             expr = expression();
-            Consume(SEMICOLON,"expect semicolon");
+            // Consume(SEMICOLON,"expect semicolon");
             return new Assignment(name,expr);
         }
         return expr;

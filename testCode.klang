@@ -1,4 +1,3 @@
-fn hi(x,y){
-    print(x + y);
-    hi(x,y + 2);
+for (var i = 0; i < 5; i = i + 1){
+    
 }
