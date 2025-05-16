@@ -36,7 +36,8 @@ namespace KLang{
                 mainString += "\n";
             }
         }
-        mainString += "}";
+        AddIndent(mainString,currentIndentLevel);
+        mainString += "return 0;\n}";
         std::string headers = "#include \"KObject.hpp\"";
         std::ofstream file(path + "\\main.cpp");
         file << headers << std::endl;
