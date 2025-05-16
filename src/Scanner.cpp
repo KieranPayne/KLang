@@ -56,7 +56,7 @@ namespace KLang
                 if (!foundClose){
                     tokens.push_back(Token(TOKEN_ERROR,"missing closing quote",line,i-startIndex));
                 }else{
-                    str = DeEscape(str);
+                    // str = DeEscape(str);
                     tokens.push_back(Token(STRING,str,line,i - startIndex));
                 }
                 

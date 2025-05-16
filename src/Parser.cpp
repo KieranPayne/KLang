@@ -6,10 +6,18 @@ namespace KLang{
         this->tokens = tokens;
         current = 0;
         panicMode = false;
-        Node* expr = program();
+        // Node* expr = program();
+        // if (!panicMode){
+        //     expr->Print();
+        // }
+    }
+    Node* Parser::Parse(){
+        panicMode = false;
+        Node* result = program();
         if (!panicMode){
-            expr->Print();
+            return result;
         }
+        return nullptr;
     }
     void Parser::SkipStatement(){
         while (Current().tokenType != ENDOFFILE){

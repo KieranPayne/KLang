@@ -16,6 +16,7 @@ namespace KLang{
         bool panicMode = false;
         std::vector<Token> tokens;
         Parser(std::vector<Token> tokens);
+        TreeNode::Node* Parse();
         private:
         Token Previous();
         Token Advance();

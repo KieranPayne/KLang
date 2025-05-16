@@ -4,6 +4,8 @@
 #include "Token.hpp"
 #include "Scanner.hpp"
 #include "Parser.hpp"
+#include "TreeNode.hpp"
+#include "Transpiler.hpp"
 int main(){
     std::ifstream file("testCode.klang");
     std::string line;
@@ -14,5 +16,8 @@ int main(){
     }
     std::vector<KLang::Token> tokens = KLang::Scanner::Scan(code);
     KLang::Parser p(tokens);
+    KLang::TreeNode::Node* node = p.Parse();
+    KLang::Transpiler t;
+    t.GenerateCode(node, "transpile_output");
     return 0;
 }
