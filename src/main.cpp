@@ -5,7 +5,7 @@
 #include "Scanner.hpp"
 #include "Parser.hpp"
 #include "TreeNode.hpp"
-#include "Transpiler.hpp"
+#include "transpile/Transpiler.hpp"
 int main(){
     std::ifstream file("testCode.klang");
     std::string line;

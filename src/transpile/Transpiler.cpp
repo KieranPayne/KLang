@@ -1,6 +1,7 @@
 #include "Transpiler.hpp"
 #include <fstream>
 #include <iostream>
+#include <memory>
 namespace KLang{
     using namespace TreeNode;
     Transpiler::Transpiler(){
@@ -29,7 +30,10 @@ namespace KLang{
             return TranspileStatement(expr) + ";";
         }else if (statement->type == NODE_LITERAL){
             return statement->tokens[0].lexeme;
+        }else if (statement->type == NODE_VARIABLE){
+            return statement->tokens[0].lexeme;
         }
+        
     }
     void Transpiler::AddIndent(std::string& str, int level){
         for (int i = 0; i < level; i ++){

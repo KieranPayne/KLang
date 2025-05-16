@@ -1,5 +1,5 @@
 #pragma once
-#include "TreeNode.hpp"
+#include "../TreeNode.hpp"
 namespace KLang{
     class Transpiler{
         public:
