@@ -248,6 +248,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/transpile/KObject.obj: src/transpile/KObject.cpp.obj
+.PHONY : src/transpile/KObject.obj
+
+# target to build an object file
+src/transpile/KObject.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/src/transpile/KObject.cpp.obj
+.PHONY : src/transpile/KObject.cpp.obj
+
+src/transpile/KObject.i: src/transpile/KObject.cpp.i
+.PHONY : src/transpile/KObject.i
+
+# target to preprocess a source file
+src/transpile/KObject.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/src/transpile/KObject.cpp.i
+.PHONY : src/transpile/KObject.cpp.i
+
+src/transpile/KObject.s: src/transpile/KObject.cpp.s
+.PHONY : src/transpile/KObject.s
+
+# target to generate assembly for a file
+src/transpile/KObject.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\test.dir\build.make CMakeFiles/test.dir/src/transpile/KObject.cpp.s
+.PHONY : src/transpile/KObject.cpp.s
+
 src/transpile/Transpiler.obj: src/transpile/Transpiler.cpp.obj
 .PHONY : src/transpile/Transpiler.obj
 
@@ -296,6 +320,9 @@ help:
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
+	@echo ... src/transpile/KObject.obj
+	@echo ... src/transpile/KObject.i
+	@echo ... src/transpile/KObject.s
 	@echo ... src/transpile/Transpiler.obj
 	@echo ... src/transpile/Transpiler.i
 	@echo ... src/transpile/Transpiler.s

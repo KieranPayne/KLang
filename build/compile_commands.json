@@ -31,6 +31,12 @@
 },
 {
   "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\transpile\\KObject.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\transpile\\KObject.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/transpile/KObject.cpp",
+  "output": "CMakeFiles/test.dir/src/transpile/KObject.cpp.obj"
+},
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
   "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\transpile\\Transpiler.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\transpile\\Transpiler.cpp",
   "file": "C:/Users/kiera/Documents/GitHub/KLang/src/transpile/Transpiler.cpp",
   "output": "CMakeFiles/test.dir/src/transpile/Transpiler.cpp.obj"

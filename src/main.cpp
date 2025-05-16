@@ -18,6 +18,6 @@ int main(){
     KLang::Parser p(tokens);
     KLang::TreeNode::Node* node = p.Parse();
     KLang::Transpiler t;
-    t.GenerateCode(node, "transpile_output");
+    t.GenerateCode(node, "..\\transpile_output");
     return 0;
 }

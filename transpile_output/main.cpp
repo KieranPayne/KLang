@@ -1,3 +1,3 @@
+#include "KObject.hpp"
 int main(){
-	hello;
 }

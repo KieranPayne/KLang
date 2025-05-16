@@ -13,6 +13,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/kiera/Documents/GitHub/KLang/src/Token.cpp" "CMakeFiles/test.dir/src/Token.cpp.obj" "gcc" "CMakeFiles/test.dir/src/Token.cpp.obj.d"
   "C:/Users/kiera/Documents/GitHub/KLang/src/TreeNode.cpp" "CMakeFiles/test.dir/src/TreeNode.cpp.obj" "gcc" "CMakeFiles/test.dir/src/TreeNode.cpp.obj.d"
   "C:/Users/kiera/Documents/GitHub/KLang/src/main.cpp" "CMakeFiles/test.dir/src/main.cpp.obj" "gcc" "CMakeFiles/test.dir/src/main.cpp.obj.d"
+  "C:/Users/kiera/Documents/GitHub/KLang/src/transpile/KObject.cpp" "CMakeFiles/test.dir/src/transpile/KObject.cpp.obj" "gcc" "CMakeFiles/test.dir/src/transpile/KObject.cpp.obj.d"
   "C:/Users/kiera/Documents/GitHub/KLang/src/transpile/Transpiler.cpp" "CMakeFiles/test.dir/src/transpile/Transpiler.cpp.obj" "gcc" "CMakeFiles/test.dir/src/transpile/Transpiler.cpp.obj.d"
   )
 

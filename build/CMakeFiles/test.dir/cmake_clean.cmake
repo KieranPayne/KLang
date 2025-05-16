@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/test.dir/src/TreeNode.cpp.obj.d"
   "CMakeFiles/test.dir/src/main.cpp.obj"
   "CMakeFiles/test.dir/src/main.cpp.obj.d"
+  "CMakeFiles/test.dir/src/transpile/KObject.cpp.obj"
+  "CMakeFiles/test.dir/src/transpile/KObject.cpp.obj.d"
   "CMakeFiles/test.dir/src/transpile/Transpiler.cpp.obj"
   "CMakeFiles/test.dir/src/transpile/Transpiler.cpp.obj.d"
   "libtest.dll.a"
