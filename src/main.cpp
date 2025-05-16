@@ -7,7 +7,7 @@
 #include "TreeNode.hpp"
 #include "transpile/Transpiler.hpp"
 int main(){
-    std::ifstream file("testCode.klang");
+    std::ifstream file("..\\testCode.klang");
     std::string line;
     std::string code = "";
     while (std::getline(file,line)){
