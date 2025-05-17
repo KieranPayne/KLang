@@ -2,7 +2,7 @@
 using namespace KLang::KLangCompiled;
 
 int main(){
-	while (std::dynamic_pointer_cast<KObjBool>((KObjFromLiteral(3)->Operation(KObjFromLiteral(5),OPERATOR_GREATER)))->value)
+	for (std::shared_ptr<KObject> i = KObjFromLiteral(0);std::dynamic_pointer_cast<KObjBool>(i->Operation(KObjFromLiteral(3),OPERATOR_LESS))->value;KObjFromLiteral(5))
 	{
 		print(KObjFromLiteral("hi"));
 	}

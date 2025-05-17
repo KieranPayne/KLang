@@ -193,6 +193,53 @@ namespace KLang{
             AddIndent(output,currentIndentLevel);
             output += "}";
             return output;
+        }else if (statement->type == NODE_IF){
+            If* expr = dynamic_cast<If*>(statement);
+            std::string output = "if (std::dynamic_pointer_cast<KObjBool>(";
+            output += TranspileStatement(expr->condition);
+            output += ")->value)\n";
+            if (expr->trueBlock->type != NODE_BLOCK){
+                currentIndentLevel ++;
+                AddIndent(output,currentIndentLevel);
+                output += TranspileStatement(expr->trueBlock);
+                currentIndentLevel --;
+            }else{
+                AddIndent(output,currentIndentLevel);
+                output += TranspileStatement(expr->trueBlock);
+            }
+            if (expr->falseBlock != nullptr){
+                if (expr->trueBlock->type != NODE_BLOCK){
+                    output += "\n";
+                    AddIndent(output,currentIndentLevel);
+                }
+                output += "else";
+                if (expr->falseBlock->type != NODE_BLOCK){
+                    output += "\n";
+                    currentIndentLevel ++;
+                    AddIndent(output,currentIndentLevel);
+                    output += TranspileStatement(expr->falseBlock);
+                    currentIndentLevel --;
+                }else{
+                    output += TranspileStatement(expr->falseBlock);
+                }
+            }
+            return output;
+        }else if (statement->type == NODE_FOR){
+            For* expr = dynamic_cast<For*>(statement);
+            std::string output = "for (";
+            output += TranspileStatement(expr->dec);
+            output += "std::dynamic_pointer_cast<KObjBool>(" + TranspileStatement(expr->condition) + ")->value;";
+            output += TranspileStatement(expr->endOfLoop);
+            output += ")\n";
+            if (expr->loopBlock->type != NODE_BLOCK){
+                AddIndent(output,++currentIndentLevel);
+                output += TranspileStatement(expr->loopBlock);
+                currentIndentLevel--;
+            }else{
+                AddIndent(output,currentIndentLevel);
+                output += TranspileStatement(expr->loopBlock);
+            }
+            return output;
         }
     }
     void Transpiler::AddIndent(std::string& str, int level){
