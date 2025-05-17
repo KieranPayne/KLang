@@ -48,9 +48,11 @@ namespace KLang{
         currentIndentLevel = mainIndent;
         AddIndent(mainString,currentIndentLevel);
         mainString += "return 0;\n}";
-        std::string headers = "#include \"KObject.hpp\"\nusing namespace KLang::KLangCompiled;";
+        std::string headers = "#include \"KObject.hpp\"\n#include <iostream>\nusing namespace KLang::KLangCompiled;";
+        std::string printFunc = "void print(std::shared_ptr<KObject> x){std::cout << std::dynamic_pointer_cast<KObjString>(x->Cast(KOBJECT_STRING))->value << std::endl;}";
         std::ofstream file(path + "\\main.cpp");
         file << headers << std::endl;
+        file << printFunc << std::endl;
         file << funcDefsString << std::endl;
         file << mainString;
         file.close();
@@ -239,6 +241,19 @@ namespace KLang{
                 AddIndent(output,currentIndentLevel);
                 output += TranspileStatement(expr->loopBlock);
             }
+            return output;
+        }else if (statement->type == NODE_ASSIGNMENT){
+            Assignment* expr = dynamic_cast<Assignment*>(statement);
+            std::string output = expr->tokens[0].lexeme + " = ";
+            output += TranspileStatement(expr->expression);
+            return output;
+        }else if (statement->type == NODE_RETURNSTMT){
+            ReturnStmt* expr = dynamic_cast<ReturnStmt*>(statement);
+            std::string output = "return";
+            if (expr->expression != nullptr){
+                output += " " + TranspileStatement(expr->expression);
+            }
+            output += ";";
             return output;
         }
     }

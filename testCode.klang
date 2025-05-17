@@ -1,3 +1,5 @@
-for (var i = 0; i < 3; 5){
-    print("hi");
+print("starting");
+for (var i = 0; i < 100000000; i = i + 1){
+
 }
+print("done");
