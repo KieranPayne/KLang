@@ -25,22 +25,32 @@ namespace KLang{
         }
 
         // std::string output = ""
+        currentIndentLevel = 0;
         std::string mainString = "int main(){\n";
-        int currentIndentLevel = 1;
+        std::string funcDefsString = "";
         Program* program = dynamic_cast<Program*>(tree);
+        int mainIndent = 1;
         for (int i = 0; i < program->statements.size(); i ++){
             NodeType type = program->statements[i]->type;
             if (type != NODE_FUNC_DEC){
+                int temp = currentIndentLevel;
+                currentIndentLevel = mainIndent;
                 AddIndent(mainString,currentIndentLevel);
                 mainString += TranspileStatement(program->statements[i]);
                 mainString += "\n";
+                currentIndentLevel = temp;
+            }else{
+                funcDefsString += TranspileStatement(program->statements[i]);
+                funcDefsString += "\n";
             }
         }
+        currentIndentLevel = mainIndent;
         AddIndent(mainString,currentIndentLevel);
         mainString += "return 0;\n}";
         std::string headers = "#include \"KObject.hpp\"\nusing namespace KLang::KLangCompiled;";
         std::ofstream file(path + "\\main.cpp");
         file << headers << std::endl;
+        file << funcDefsString << std::endl;
         file << mainString;
         file.close();
         std::cout << "done" << std::endl;
@@ -52,6 +62,8 @@ namespace KLang{
         }else if (statement->type == NODE_LITERAL){
             if (statement->tokens[0].tokenType == NULLVAL){
                 return "std::shared_ptr<KObject>(new KObjNull())";
+            }else if (statement->tokens[0].tokenType == STRING){
+                return "KObjFromLiteral(\"" + statement->tokens[0].lexeme + "\")";
             }
             return "KObjFromLiteral(" + statement->tokens[0].lexeme + ")";
             // return statement->tokens[0].lexeme;
@@ -101,6 +113,44 @@ namespace KLang{
                 output += TranspileStatement(expr->expression);
             }
             return output + ";";
+        }else if (statement->type == NODE_CALL){
+            Call* expr = dynamic_cast<Call*>(statement);
+            std::string output = expr->tokens[0].lexeme;
+            output += "(";
+            for (int i = 0; i < expr->args.size(); i ++){
+                output += TranspileStatement(expr->args[i]);
+                if (i != expr->args.size() - 1){
+                    output += ",";
+                }
+            }
+            output += ")";
+      
+
+            return output;
+        }else if (statement->type == NODE_FUNC_DEC){
+            FuncDec* expr = dynamic_cast<FuncDec*>(statement);
+            std::string output = "std::shared_ptr<KObject> ";
+            output += expr->tokens[0].lexeme + "(";
+            for (int i = 1; i < expr->tokens.size(); i ++ ){
+                output += "std::shared_ptr<KObject> " + expr->tokens[i].lexeme;
+                if (i != expr->tokens.size() - 1){
+                    output += ",";
+                }
+            }
+            output += "){\n";
+            currentIndentLevel ++;
+            Block* block = dynamic_cast<Block*>(expr->block);
+            for (int i = 0; i < block->statements.size(); i ++){
+                AddIndent(output,currentIndentLevel);
+                output += TranspileStatement(block->statements[i]) + "\n";
+            }
+            //make sure it always returns null as default
+            AddIndent(output,currentIndentLevel);
+            output += "return std::shared_ptr<KObject>(new KObjNull());\n";
+            output += "}";
+            currentIndentLevel --;
+            return output;
+
         }
         
     }

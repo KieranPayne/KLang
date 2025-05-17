@@ -1,1 +1,5 @@
+fn test(x){
+    print(x);
+}
 var x = 5;
+test(x * 2);
