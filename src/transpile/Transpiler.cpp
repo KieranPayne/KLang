@@ -93,6 +93,14 @@ namespace KLang{
                 break;
             }
             return TranspileStatement(oper->lhs) + "->Operation(" + TranspileStatement(oper->rhs) + "," + operation + ")";
+        }else if (statement->type == NODE_VAR_DEC){
+            VarDec* expr = dynamic_cast<VarDec*>(statement);
+            std::string output = "std::shared_ptr<KObject> " + statement->tokens[0].lexeme;
+            if (expr->expression != nullptr){
+                output += " = ";
+                output += TranspileStatement(expr->expression);
+            }
+            return output + ";";
         }
         
     }
