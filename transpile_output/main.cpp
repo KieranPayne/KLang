@@ -2,6 +2,9 @@
 using namespace KLang::KLangCompiled;
 
 int main(){
-	std::shared_ptr<KObject> x = KObjFromLiteral(5)->UnaryOp(OPERATOR_MINUS);
+	while (std::dynamic_pointer_cast<KObjBool>((KObjFromLiteral(3)->Operation(KObjFromLiteral(5),OPERATOR_GREATER)))->value)
+	{
+		print(KObjFromLiteral("hi"));
+	}
 	return 0;
 }

@@ -8,6 +8,7 @@ namespace KLang{
         tree = nullptr;
     }
     void Transpiler::GenerateCode(Node* tree, std::string path){
+        tree->Print();
         //copy over required files
         std::vector<std::string> reqdFiles = {"..\\src\\transpile\\KObject.hpp","..\\src\\transpile\\KObject.cpp"};
         std::vector<std::string> outputNames = {"KObject.hpp","KObject.cpp"};
@@ -163,6 +164,35 @@ namespace KLang{
                 op = "OPERATOR_NEGATE";
             }
             return TranspileStatement(expr->node) + "->UnaryOp(" + op + ")";
+        }else if (statement->type == NODE_WHILE){
+            While* expr = dynamic_cast<While*>(statement);
+            std::string output = "while (std::dynamic_pointer_cast<KObjBool>(";
+            output += TranspileStatement(expr->condition);
+            output += ")->value)\n";
+            if (expr->block->type != NODE_BLOCK){
+                currentIndentLevel ++;
+                AddIndent(output,currentIndentLevel);
+                output += TranspileStatement(expr->block);
+                currentIndentLevel --;
+            }else{
+                AddIndent(output,currentIndentLevel);
+                output += TranspileStatement(expr->block);
+            }
+            return output;
+        }else if (statement->type == NODE_BLOCK){
+            Block* expr = dynamic_cast<Block*>(statement);
+            std::string output = "{\n";
+            currentIndentLevel ++;
+            for (int i = 0; i < expr->statements.size(); i ++){
+                AddIndent(output,currentIndentLevel);
+                output += TranspileStatement(expr->statements[i]);
+                output += "\n";
+            }
+            currentIndentLevel --;
+
+            AddIndent(output,currentIndentLevel);
+            output += "}";
+            return output;
         }
     }
     void Transpiler::AddIndent(std::string& str, int level){
