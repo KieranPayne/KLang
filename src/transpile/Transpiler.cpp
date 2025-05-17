@@ -50,6 +50,9 @@ namespace KLang{
             Node* expr = dynamic_cast<ExprStmt*>(statement)->expression;
             return TranspileStatement(expr) + ";";
         }else if (statement->type == NODE_LITERAL){
+            if (statement->tokens[0].tokenType == NULLVAL){
+                return "std::shared_ptr<KObject>(new KObjNull())";
+            }
             return "KObjFromLiteral(" + statement->tokens[0].lexeme + ")";
             // return statement->tokens[0].lexeme;
         }else if (statement->type == NODE_VARIABLE){
