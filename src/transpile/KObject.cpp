@@ -5,6 +5,10 @@ namespace KLang{
         KObject::KObject(){
             type = KOBJECT_NONE;
         }
+        std::shared_ptr<KObject> KObject::UnaryOp(OperatorType op){
+            return std::shared_ptr<KObject>(new KObject());
+        }
+
         KObject::~KObject(){}
         std::shared_ptr<KObject> KObject::Operation(std::shared_ptr<KObject> other, OperatorType op){
             if (op == OPERATOR_EQUAL || op == OPERATOR_NOTEQUAL){
@@ -269,6 +273,33 @@ namespace KLang{
                 return std::shared_ptr<KObject>(new KObjNull());
             }
         }
+        std::shared_ptr<KObject> KObjInteger::UnaryOp(OperatorType op){
+            if (op == OPERATOR_MINUS){
+                return std::shared_ptr<KObject>(new KObjInteger(-value));
+            }else if (op == OPERATOR_NEGATE){
+                return std::shared_ptr<KObject>(new KObjInteger((value == 0) ? 1 : 0));
+            }
+        }
+        std::shared_ptr<KObject> KObjReal::UnaryOp(OperatorType op){
+            if (op == OPERATOR_MINUS){
+                return std::shared_ptr<KObject>(new KObjReal(-value));
+            }else if (op == OPERATOR_NEGATE){
+                return std::shared_ptr<KObject>(new KObjInteger((value == 0) ? 1 : 0));
+            }
+        }
+        std::shared_ptr<KObject> KObjBool::UnaryOp(OperatorType op){
+            if (op == OPERATOR_MINUS){
+                return std::shared_ptr<KObject>(new KObjInteger((value) ? -1 : 0));
+            }else if (op == OPERATOR_NEGATE){
+                return std::shared_ptr<KObject>(new KObjBool(!value));
+            }
+        }
+        std::shared_ptr<KObject> KObjString::UnaryOp(OperatorType op){
+            return std::shared_ptr<KObject>(new KObjNull());
+        }
+        std::shared_ptr<KObject> KObjNull::UnaryOp(OperatorType op){
+            return std::shared_ptr<KObject>(new KObjNull());
+        }
         std::shared_ptr<KObject> KObjFromLiteral(int value){
             return std::shared_ptr<KObject>(new KObjInteger(value));
         }      
@@ -281,7 +312,7 @@ namespace KLang{
         std::shared_ptr<KObject> KObjFromLiteral(bool value){
             return std::shared_ptr<KObject>(new KObjBool(value));
         }
-         
+
 
 
     }

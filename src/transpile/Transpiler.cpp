@@ -151,8 +151,19 @@ namespace KLang{
             currentIndentLevel --;
             return output;
 
+        }else if (statement->type == NODE_GROUPING){
+            Grouping* expr = dynamic_cast<Grouping*>(statement);
+            return "(" + TranspileStatement(expr->node) + ")";
+        }else if (statement->type == NODE_UNARY){
+            Unary* expr = dynamic_cast<Unary*>(statement);
+            std::string op;
+            if (expr->tokens[0].tokenType == MINUS){
+                op = "OPERATOR_MINUS";
+            }else if (expr->tokens[0].tokenType == BANG){
+                op = "OPERATOR_NEGATE";
+            }
+            return TranspileStatement(expr->node) + "->UnaryOp(" + op + ")";
         }
-        
     }
     void Transpiler::AddIndent(std::string& str, int level){
         for (int i = 0; i < level; i ++){
