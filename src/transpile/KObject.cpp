@@ -119,7 +119,18 @@ namespace KLang{
 
             }
         }
-        
+        std::shared_ptr<KObject> KObjFromLiteral(int value){
+            return std::shared_ptr<KObject>(new KObjInteger(value));
+        }      
+        std::shared_ptr<KObject> KObjFromLiteral(double value){
+            return std::shared_ptr<KObject>(new KObjReal(value));
+        } 
+        std::shared_ptr<KObject> KObjFromLiteral(std::string value){
+            return std::shared_ptr<KObject>(new KObjString(value));
+        } 
+        std::shared_ptr<KObject> KObjFromLiteral(bool value){
+            return std::shared_ptr<KObject>(new KObjBool(value));
+        }   
 
 
     }

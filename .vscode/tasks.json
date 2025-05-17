@@ -10,7 +10,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${workspaceFolder}\\src\\*.cpp",
+                "${workspaceFolder}\\transpile_output\\*.cpp",
                 "-o",
                 "${workspaceFolder}\\${workspaceFolderBasename}.exe"
             ],
