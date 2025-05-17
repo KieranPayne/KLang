@@ -57,6 +57,42 @@ namespace KLang{
             // return statement->tokens[0].lexeme;
         }else if (statement->type == NODE_VARIABLE){
             return statement->tokens[0].lexeme;
+        }else if (statement->type == NODE_BINARY){
+            Binary* oper = dynamic_cast<Binary*>(statement);
+            std::string operation = "";
+            switch (oper->tokens[0].tokenType){
+                case PLUS:
+                operation = "OPERATOR_PLUS";
+                break;
+                case MINUS:
+                operation = "OPERATOR_MINUS";
+                break;
+                case STAR:
+                operation = "OPERATOR_MULTIPLY";
+                break;
+                case SLASH:
+                operation = "OPERATOR_DIVIDE";
+                break;
+                case BANG_EQUAL:
+                operation = "OPERATOR_NOTEEQUAL";
+                break;
+                case EQUAL_EQUAL:
+                operation = "OPERATOR_EQUAL";
+                break;
+                case LESS_EQUAL:
+                operation = "OPERATOR_LESSEQUAL";
+                break;
+                case LESS:
+                operation = "OPERATOR_LESS";
+                break;
+                case GREATER:
+                operation = "OPERATOR_GREATER";
+                break;
+                case GREATER_EQUAL:
+                operation = "OPERATOR_GREATEREQUAL";
+                break;
+            }
+            return TranspileStatement(oper->lhs) + "->Operation(" + TranspileStatement(oper->rhs) + "," + operation + ")";
         }
         
     }
