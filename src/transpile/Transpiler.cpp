@@ -38,7 +38,7 @@ namespace KLang{
         }
         AddIndent(mainString,currentIndentLevel);
         mainString += "return 0;\n}";
-        std::string headers = "#include \"KObject.hpp\"";
+        std::string headers = "#include \"KObject.hpp\"\nusing namespace KLang::KLangCompiled;";
         std::ofstream file(path + "\\main.cpp");
         file << headers << std::endl;
         file << mainString;
@@ -50,7 +50,8 @@ namespace KLang{
             Node* expr = dynamic_cast<ExprStmt*>(statement)->expression;
             return TranspileStatement(expr) + ";";
         }else if (statement->type == NODE_LITERAL){
-            return statement->tokens[0].lexeme;
+            return "KObjFromLiteral(" + statement->tokens[0].lexeme + ")";
+            // return statement->tokens[0].lexeme;
         }else if (statement->type == NODE_VARIABLE){
             return statement->tokens[0].lexeme;
         }

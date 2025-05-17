@@ -65,5 +65,9 @@ namespace KLang{
             // std::shared_ptr<KObject> OperationSameType(std::shared_ptr<KObject> other, OperatorType op);
             // std::shared_ptr<KObject> Cast(KObjectType newType);
         };
+        std::shared_ptr<KObject> KObjFromLiteral(int value);
+        std::shared_ptr<KObject> KObjFromLiteral(double value);
+        std::shared_ptr<KObject> KObjFromLiteral(std::string value);
+        std::shared_ptr<KObject> KObjFromLiteral(bool value);
     }
 }

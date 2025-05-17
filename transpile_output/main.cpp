@@ -1,5 +1,6 @@
 #include "KObject.hpp"
+using namespace KLang::KLangCompiled;
 int main(){
-	5;
+	KObjFromLiteral(5);
 	return 0;
 }
