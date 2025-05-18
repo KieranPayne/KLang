@@ -23,58 +23,28 @@ namespace KLang{
             OPERATOR_GREATEREQUAL,
             OPERATOR_NEGATE
         };
-        class KObject : public std::enable_shared_from_this<KObject>{
+        class KObject{
             public:
             KObjectType type;
+            union
+            {
+                std::string* strVal;
+                double doubleVal;
+                int intVal;
+            };
+            //blank constructor initialises as null by default
             KObject();
+            KObject(int value);
+            KObject(double value);
+            KObject(std::string value);
+            KObject(bool value);
             ~KObject();
-            std::shared_ptr<KObject> Operation(std::shared_ptr<KObject> other, OperatorType op);
-            virtual std::shared_ptr<KObject> OperationSameType(std::shared_ptr<KObject> other, OperatorType op);
-            virtual std::shared_ptr<KObject> Cast(KObjectType newType);
-            virtual std::shared_ptr<KObject> UnaryOp(OperatorType op);
+            // KObject Operation(KObject& other, OperatorType op);
+            KObject Equality(KObject& other, bool equals);
+            KObject Comparison(KObject& other, OperatorType op);
+            KObject Arithmetic(KObject& other, OperatorType op);
+            KObject Cast(KObjectType newType);
+            KObject UnaryOp(OperatorType op);
         };
-        class KObjInteger : public KObject{
-            public:
-            int value;
-            KObjInteger(int value);
-            std::shared_ptr<KObject> OperationSameType(std::shared_ptr<KObject> other, OperatorType op);
-            std::shared_ptr<KObject> Cast(KObjectType newType);
-            std::shared_ptr<KObject> UnaryOp(OperatorType op);
-        };
-        class KObjReal : public KObject{
-            public:
-            double value;
-            KObjReal(double value);
-            std::shared_ptr<KObject> OperationSameType(std::shared_ptr<KObject> other, OperatorType op);
-            std::shared_ptr<KObject> Cast(KObjectType newType);
-            std::shared_ptr<KObject> UnaryOp(OperatorType op);
-        };
-        class KObjString : public KObject{
-            public:
-            std::string value;
-            KObjString(std::string value);
-            std::shared_ptr<KObject> OperationSameType(std::shared_ptr<KObject> other, OperatorType op);
-            std::shared_ptr<KObject> Cast(KObjectType newType);
-            std::shared_ptr<KObject> UnaryOp(OperatorType op);
-        };
-        class KObjBool : public KObject{
-            public:
-            bool value;
-            KObjBool(bool value);
-            std::shared_ptr<KObject> OperationSameType(std::shared_ptr<KObject> other, OperatorType op);
-            std::shared_ptr<KObject> Cast(KObjectType newType);
-            std::shared_ptr<KObject> UnaryOp(OperatorType op);
-        };
-        class KObjNull : public KObject{
-            public:
-            KObjNull();
-            std::shared_ptr<KObject> OperationSameType(std::shared_ptr<KObject> other, OperatorType op);
-            std::shared_ptr<KObject> Cast(KObjectType newType);
-            std::shared_ptr<KObject> UnaryOp(OperatorType op);
-        };
-        std::shared_ptr<KObject> KObjFromLiteral(int value);
-        std::shared_ptr<KObject> KObjFromLiteral(double value);
-        std::shared_ptr<KObject> KObjFromLiteral(std::string value);
-        std::shared_ptr<KObject> KObjFromLiteral(bool value);
     }
 }
