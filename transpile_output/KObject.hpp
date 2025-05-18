@@ -40,11 +40,12 @@ namespace KLang{
             KObject(bool value);
             ~KObject();
             // KObject Operation(KObject& other, OperatorType op);
-            KObject Equality(KObject& other, bool equals);
-            KObject Comparison(KObject& other, OperatorType op);
-            KObject Arithmetic(KObject& other, OperatorType op);
+            KObject Equality(KObject other, bool equals);
+            KObject Comparison(KObject other, OperatorType op);
+            KObject Arithmetic(KObject other, OperatorType op);
             KObject Cast(KObjectType newType);
             KObject UnaryOp(OperatorType op);
+            bool AsBool();
         };
     }
 }

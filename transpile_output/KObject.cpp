@@ -53,7 +53,7 @@ namespace KLang{
             }
         }
         
-        KObject KObject::Equality(KObject& other, bool equals){
+        KObject KObject::Equality(KObject other, bool equals){
             KObject result;
             if (other.type == type){
                 if (ISINT || ISBOOL){
@@ -78,7 +78,7 @@ namespace KLang{
             }
             return result;
         }
-        KObject KObject::Comparison(KObject& other, OperatorType op){
+        KObject KObject::Comparison(KObject other, OperatorType op){
             bool greater;
             bool equal;
             if (ISINT && other. ISINT){
@@ -99,12 +99,12 @@ namespace KLang{
                 case (int)OPERATOR_GREATEREQUAL:
                     return KObject(greater || equal);
                 case (int)OPERATOR_LESS:
-                    return KObject(!greater);
+                    return KObject(!greater && !equal);
                 case (int)OPERATOR_LESSEQUAL:
-                    return KObject(!greater || equal);
+                    return KObject(!greater);
             }
         }
-        KObject KObject::Arithmetic(KObject& other, OperatorType op){
+        KObject KObject::Arithmetic(KObject other, OperatorType op){
             if (ISSTRING){
                 return KObject( *strVal + *other.Cast(KOBJECT_STRING).strVal);
             }
@@ -167,7 +167,89 @@ namespace KLang{
             return KObject();
         }
         KObject KObject::Cast(KObjectType newType){
-            return KObject();
+            switch ((int)newType){
+                case (int)KOBJECT_STRING:
+                {
+                    switch ((int)type){
+                        case (int)KOBJECT_INTEGER:
+                            return KObject(std::to_string(intVal));
+                        case (int)KOBJECT_REAL:
+                            return KObject(std::to_string(doubleVal));
+                        case (int)KOBJECT_BOOL:
+                            return KObject(intVal ? "true" : "false");
+                        case (int)KOBJECT_STRING:
+                            return KObject(*strVal);
+                        case (int)KOBJECT_NULL:
+                            return KObject("null");
+                    }
+                }
+                case (int)KOBJECT_INTEGER:
+                {
+                    switch ((int)type){
+                        case (int)KOBJECT_INTEGER:
+                            return KObject(intVal);
+                        case (int)KOBJECT_BOOL:
+                            return KObject(intVal);
+                        case (int)KOBJECT_REAL:
+                            return KObject((int)doubleVal);
+                        case (int)KOBJECT_STRING:
+                        {
+                            try{
+                                return KObject(std::stoi(*strVal));
+                            }
+                            catch (int i ){
+                                return KObject();
+                            }
+                        }
+                        case (int)KOBJECT_NULL:
+                            return KObject();
+                    }
+                }
+                case (int)KOBJECT_REAL:
+                {
+                    switch ((int)type){
+                        case (int)KOBJECT_INTEGER:
+                            return KObject((double)intVal);
+                        case (int)KOBJECT_REAL:
+                            return KObject(doubleVal);
+                        case (int)KOBJECT_STRING:
+                        {
+                            try{
+                                return KObject(std::stod(*strVal));
+                            }catch (int i ){
+                                return KObject();
+                            }
+                        }
+                        case (int)KOBJECT_BOOL:
+                            return KObject((double)intVal);
+                        case (int)KOBJECT_NULL:
+                            return KObject();
+                    }
+                }
+                case (int)KOBJECT_BOOL:
+                {
+                    switch ((int)type){
+                        case (int)KOBJECT_INTEGER:
+                            return KObject(intVal != 0);
+                        case(int)KOBJECT_REAL:
+                            return KObject(doubleVal != 0);
+                        case (int)KOBJECT_BOOL:
+                            return KObject((bool)intVal);
+                        case (int)KOBJECT_STRING:
+                            return KObject(*strVal == "true");
+                        case (int)KOBJECT_NULL:
+                            return KObject(false);
+                    }
+                }
+                case (int)KOBJECT_NULL:
+                    return KObject();
+            }
+        }
+        bool KObject::AsBool(){
+            if (ISBOOL){
+                return intVal;
+            }
+            return Cast(KOBJECT_BOOL).intVal;
         }
     }
 }

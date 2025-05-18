@@ -1,5 +1,7 @@
-print("starting");
-for (var i = 0; i < 100000000; i = i + 1){
-
+fn fib(x){
+    if (x < 2){
+        return 1;
+    }
+    return fib(x-2) + fib(x-1);
 }
-print("done");
+print(fib(40));

@@ -53,7 +53,7 @@ namespace KLang{
             }
         }
         
-        KObject KObject::Equality(KObject& other, bool equals){
+        KObject KObject::Equality(KObject other, bool equals){
             KObject result;
             if (other.type == type){
                 if (ISINT || ISBOOL){
@@ -78,7 +78,7 @@ namespace KLang{
             }
             return result;
         }
-        KObject KObject::Comparison(KObject& other, OperatorType op){
+        KObject KObject::Comparison(KObject other, OperatorType op){
             bool greater;
             bool equal;
             if (ISINT && other. ISINT){
@@ -99,12 +99,12 @@ namespace KLang{
                 case (int)OPERATOR_GREATEREQUAL:
                     return KObject(greater || equal);
                 case (int)OPERATOR_LESS:
-                    return KObject(!greater);
+                    return KObject(!greater && !equal);
                 case (int)OPERATOR_LESSEQUAL:
-                    return KObject(!greater || equal);
+                    return KObject(!greater);
             }
         }
-        KObject KObject::Arithmetic(KObject& other, OperatorType op){
+        KObject KObject::Arithmetic(KObject other, OperatorType op){
             if (ISSTRING){
                 return KObject( *strVal + *other.Cast(KOBJECT_STRING).strVal);
             }
@@ -238,12 +238,18 @@ namespace KLang{
                         case (int)KOBJECT_STRING:
                             return KObject(*strVal == "true");
                         case (int)KOBJECT_NULL:
-                            return KObject();
+                            return KObject(false);
                     }
                 }
                 case (int)KOBJECT_NULL:
                     return KObject();
             }
+        }
+        bool KObject::AsBool(){
+            if (ISBOOL){
+                return intVal;
+            }
+            return Cast(KOBJECT_BOOL).intVal;
         }
     }
 }

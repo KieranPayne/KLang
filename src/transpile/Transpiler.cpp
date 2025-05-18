@@ -49,7 +49,7 @@ namespace KLang{
         AddIndent(mainString,currentIndentLevel);
         mainString += "return 0;\n}";
         std::string headers = "#include \"KObject.hpp\"\n#include <iostream>\nusing namespace KLang::KLangCompiled;";
-        std::string printFunc = "void print(std::shared_ptr<KObject> x){std::cout << std::dynamic_pointer_cast<KObjString>(x->Cast(KOBJECT_STRING))->value << std::endl;}";
+        std::string printFunc = "void print(KObject x){std::cout << *x.Cast(KOBJECT_STRING).strVal << std::endl;}";
         std::ofstream file(path + "\\main.cpp");
         file << headers << std::endl;
         file << printFunc << std::endl;
@@ -64,53 +64,54 @@ namespace KLang{
             return TranspileStatement(expr) + ";";
         }else if (statement->type == NODE_LITERAL){
             if (statement->tokens[0].tokenType == NULLVAL){
-                return "std::shared_ptr<KObject>(new KObjNull())";
+                return "KObject()";
             }else if (statement->tokens[0].tokenType == STRING){
-                return "KObjFromLiteral(\"" + statement->tokens[0].lexeme + "\")";
+                return "KObject(\"" + statement->tokens[0].lexeme + "\")";
             }
-            return "KObjFromLiteral(" + statement->tokens[0].lexeme + ")";
+            return "KObject(" + statement->tokens[0].lexeme + ")";
             // return statement->tokens[0].lexeme;
         }else if (statement->type == NODE_VARIABLE){
             return statement->tokens[0].lexeme;
         }else if (statement->type == NODE_BINARY){
             Binary* oper = dynamic_cast<Binary*>(statement);
-            std::string operation = "";
-            switch (oper->tokens[0].tokenType){
-                case PLUS:
-                operation = "OPERATOR_PLUS";
-                break;
-                case MINUS:
-                operation = "OPERATOR_MINUS";
-                break;
-                case STAR:
-                operation = "OPERATOR_MULTIPLY";
-                break;
-                case SLASH:
-                operation = "OPERATOR_DIVIDE";
-                break;
-                case BANG_EQUAL:
-                operation = "OPERATOR_NOTEEQUAL";
-                break;
-                case EQUAL_EQUAL:
-                operation = "OPERATOR_EQUAL";
-                break;
-                case LESS_EQUAL:
-                operation = "OPERATOR_LESSEQUAL";
-                break;
-                case LESS:
-                operation = "OPERATOR_LESS";
-                break;
-                case GREATER:
-                operation = "OPERATOR_GREATER";
-                break;
-                case GREATER_EQUAL:
-                operation = "OPERATOR_GREATEREQUAL";
-                break;
+            std::string output = TranspileStatement(oper->lhs);
+            TokenType op = oper->tokens[0].tokenType;
+            switch ((int)op){
+                case (int)PLUS:
+                    output += ".Arithmetic(" + TranspileStatement(oper->rhs) + ",OPERATOR_PLUS)";
+                    break;
+                case (int)MINUS:
+                    output += ".Arithmetic(" + TranspileStatement(oper->rhs) + ",OPERATOR_MINUS)";
+                    break;
+                case (int)STAR:
+                    output += ".Arithmetic(" + TranspileStatement(oper->rhs) + ",OPERATOR_STAR)";
+                    break;
+                case (int)SLASH:
+                    output += ".Arithmetic(" + TranspileStatement(oper->rhs) + ",OPERATOR_SLASH)";
+                    break;
+                case (int)EQUAL_EQUAL:
+                    output += ".Equality(" + TranspileStatement(oper->rhs) + ",true)";
+                    break;
+                case (int)BANG_EQUAL:
+                    output += ".Equality(" + TranspileStatement(oper->rhs) + ",false)";
+                    break;
+                case (int)GREATER:
+                    output += ".Comparison(" + TranspileStatement(oper->rhs) + ",OPERATOR_GREATER)";
+                    break;
+                case (int)GREATER_EQUAL:
+                    output += ".Comparison(" + TranspileStatement(oper->rhs) + ",OPERATOR_GREATEREQUAL)";
+                    break;
+                case (int)LESS:
+                    output += ".Comparison(" + TranspileStatement(oper->rhs) + ",OPERATOR_LESS)";
+                    break;
+                case (int)LESS_EQUAL:
+                    output += ".Comparison(" + TranspileStatement(oper->rhs) + ",OPERATOR_LESSEQUAL)";
+                    break;
             }
-            return TranspileStatement(oper->lhs) + "->Operation(" + TranspileStatement(oper->rhs) + "," + operation + ")";
+            return output;
         }else if (statement->type == NODE_VAR_DEC){
             VarDec* expr = dynamic_cast<VarDec*>(statement);
-            std::string output = "std::shared_ptr<KObject> " + statement->tokens[0].lexeme;
+            std::string output = "KObject " + statement->tokens[0].lexeme;
             if (expr->expression != nullptr){
                 output += " = ";
                 output += TranspileStatement(expr->expression);
@@ -132,10 +133,10 @@ namespace KLang{
             return output;
         }else if (statement->type == NODE_FUNC_DEC){
             FuncDec* expr = dynamic_cast<FuncDec*>(statement);
-            std::string output = "std::shared_ptr<KObject> ";
+            std::string output = "KObject ";
             output += expr->tokens[0].lexeme + "(";
             for (int i = 1; i < expr->tokens.size(); i ++ ){
-                output += "std::shared_ptr<KObject> " + expr->tokens[i].lexeme;
+                output += "KObject " + expr->tokens[i].lexeme;
                 if (i != expr->tokens.size() - 1){
                     output += ",";
                 }
@@ -149,7 +150,7 @@ namespace KLang{
             }
             //make sure it always returns null as default
             AddIndent(output,currentIndentLevel);
-            output += "return std::shared_ptr<KObject>(new KObjNull());\n";
+            output += "return KObject();\n";
             output += "}";
             currentIndentLevel --;
             return output;
@@ -165,12 +166,12 @@ namespace KLang{
             }else if (expr->tokens[0].tokenType == BANG){
                 op = "OPERATOR_NEGATE";
             }
-            return TranspileStatement(expr->node) + "->UnaryOp(" + op + ")";
+            return TranspileStatement(expr->node) + ".UnaryOp(" + op + ")";
         }else if (statement->type == NODE_WHILE){
             While* expr = dynamic_cast<While*>(statement);
-            std::string output = "while (std::dynamic_pointer_cast<KObjBool>(";
+            std::string output = "while (";
             output += TranspileStatement(expr->condition);
-            output += ")->value)\n";
+            output += ".AsBool())\n";
             if (expr->block->type != NODE_BLOCK){
                 currentIndentLevel ++;
                 AddIndent(output,currentIndentLevel);
@@ -197,9 +198,9 @@ namespace KLang{
             return output;
         }else if (statement->type == NODE_IF){
             If* expr = dynamic_cast<If*>(statement);
-            std::string output = "if (std::dynamic_pointer_cast<KObjBool>(";
+            std::string output = "if (";
             output += TranspileStatement(expr->condition);
-            output += ")->value)\n";
+            output += ".AsBool())\n";
             if (expr->trueBlock->type != NODE_BLOCK){
                 currentIndentLevel ++;
                 AddIndent(output,currentIndentLevel);
@@ -230,7 +231,7 @@ namespace KLang{
             For* expr = dynamic_cast<For*>(statement);
             std::string output = "for (";
             output += TranspileStatement(expr->dec);
-            output += "std::dynamic_pointer_cast<KObjBool>(" + TranspileStatement(expr->condition) + ")->value;";
+            output += TranspileStatement(expr->condition) + ".AsBool();";
             output += TranspileStatement(expr->endOfLoop);
             output += ")\n";
             if (expr->loopBlock->type != NODE_BLOCK){
