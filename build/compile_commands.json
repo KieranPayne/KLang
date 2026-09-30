@@ -1,0 +1,44 @@
+[
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\Parser.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\Parser.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/Parser.cpp",
+  "output": "CMakeFiles/test.dir/src/Parser.cpp.obj"
+},
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\Scanner.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\Scanner.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/Scanner.cpp",
+  "output": "CMakeFiles/test.dir/src/Scanner.cpp.obj"
+},
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\Token.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\Token.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/Token.cpp",
+  "output": "CMakeFiles/test.dir/src/Token.cpp.obj"
+},
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\TreeNode.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\TreeNode.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/TreeNode.cpp",
+  "output": "CMakeFiles/test.dir/src/TreeNode.cpp.obj"
+},
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\main.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\main.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/main.cpp",
+  "output": "CMakeFiles/test.dir/src/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\transpile\\KObject.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\transpile\\KObject.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/transpile/KObject.cpp",
+  "output": "CMakeFiles/test.dir/src/transpile/KObject.cpp.obj"
+},
+{
+  "directory": "C:/Users/kiera/Documents/GitHub/KLang/build",
+  "command": "C:\\mingw32\\bin\\g++.exe   -g -std=gnu++1z -o CMakeFiles\\test.dir\\src\\transpile\\Transpiler.cpp.obj -c C:\\Users\\kiera\\Documents\\GitHub\\KLang\\src\\transpile\\Transpiler.cpp",
+  "file": "C:/Users/kiera/Documents/GitHub/KLang/src/transpile/Transpiler.cpp",
+  "output": "CMakeFiles/test.dir/src/transpile/Transpiler.cpp.obj"
+}
+]
