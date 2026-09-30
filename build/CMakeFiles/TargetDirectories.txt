@@ -1,3 +1,0 @@
-C:/Users/kiera/Documents/GitHub/KLang/build/CMakeFiles/test.dir
-C:/Users/kiera/Documents/GitHub/KLang/build/CMakeFiles/edit_cache.dir
-C:/Users/kiera/Documents/GitHub/KLang/build/CMakeFiles/rebuild_cache.dir
